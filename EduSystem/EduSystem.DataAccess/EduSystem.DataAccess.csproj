@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="DBContext\" />
+    <Folder Include="IRepositories\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Seed\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>
