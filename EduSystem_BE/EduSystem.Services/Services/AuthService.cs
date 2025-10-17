@@ -340,7 +340,7 @@ namespace EduSystem.Services.Services
                 // Xây dựng liên kết xác thực.
                 // Lưu ý: thay đổi URL cho phù hợp với môi trường (local hay production)
                 var verificationLink =
-                    $"https://localhost:7296//verify-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+                    $"https://localhost:5173//verify-email?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
                 // Gọi EmailService để gửi email xác thực sử dụng template VerificationEmailTemplate
                 var emailSent = await _emailService.SendVerificationEmailAsync(user.Email!, verificationLink, user.FullName);
