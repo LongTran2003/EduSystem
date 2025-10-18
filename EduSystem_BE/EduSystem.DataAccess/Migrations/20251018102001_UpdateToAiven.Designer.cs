@@ -3,6 +3,7 @@ using System;
 using EduSystem.DataAccess.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduSystem.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251018102001_UpdateToAiven")]
+    partial class UpdateToAiven
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,7 +126,7 @@ namespace EduSystem.DataAccess.Migrations
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
                             BirthDate = new DateTime(2001, 6, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ConcurrencyStamp = "0d4c47ac-1da9-4e42-bb79-31c44c1115ad",
+                            ConcurrencyStamp = "a5393a31-593d-4206-8e99-32a0e8e56789",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Admin",
@@ -131,10 +134,10 @@ namespace EduSystem.DataAccess.Migrations
                             LockoutEnabled = true,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDzXhqCd4WmDibkui+3gog28rEywYKREP+49eOJx53IR+gqQ7shMC5NPEHv9pVOvpg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDyKQu8FvbixsAOrGnRpqwAujjXhFscRvMYYvV6OzSJWw4kcVAfdwDPWQKlfsRJl7w==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "af990f85-3753-456d-bcd1-81407bed9a00",
+                            SecurityStamp = "4f84b734-8ffa-4417-ae22-865610000ab3",
                             Status = "Active",
                             TwoFactorEnabled = false,
                             UserName = "admin@gmail.com"

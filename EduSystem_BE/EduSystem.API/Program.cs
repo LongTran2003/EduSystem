@@ -23,7 +23,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     //options.UseSqlServer(
     //    builder.Configuration.GetConnectionString(StaticConnectionString.SqldbDefaultConnection));
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString(StaticConnectionString.PostgreDefaultConnection));
+        builder.Configuration.GetConnectionString(StaticConnectionString.PostgreSqlConnection));
 });
 
 // Configure Identity  
@@ -107,11 +107,11 @@ var app = builder.Build();
 app.UseMiddleware<GlobalExceptionHandllingMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 
