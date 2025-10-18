@@ -100,7 +100,7 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpPost("password/otp")]
-        [SwaggerOperation(Summary = "API send OPT code to change account's pasword",
+        [SwaggerOperation(Summary = "API sends OPT code to change account's pasword",
             Description = "Requires customer's, staff's  account")]
         public async Task<IActionResult> SendOTP([FromBody] EmailDto emailDto)
         {

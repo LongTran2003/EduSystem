@@ -102,8 +102,52 @@ builder.Services.AddSwaggerGen();
 // Register services from Extensions
 builder.Services.RegisterServices(builder.Configuration);
 
+// Configure CORS
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowEduSystem",
+        builder =>
+        {
+            builder.WithOrigins(corsOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
+// Setup CORS middleware
+app.Use(async (context, next) =>
+{
+    var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
+    var logger = loggerFactory.CreateLogger("CORSMiddleware");
+
+    logger.LogInformation($"Request from origin: {context.Request.Headers["Origin"]}");
+    logger.LogInformation($"Request method: {context.Request.Method}");
+    logger.LogInformation($"Request path: {context.Request.Path}");
+
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.Headers.Append("Access-Control-Allow-Origin", context.Request.Headers["Origin"]);
+        context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, x-requested-with, x-signalr-user-agent");
+        context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+        context.Response.StatusCode = 200;
+        await context.Response.CompleteAsync();
+    }
+    else
+    {
+        await next();
+    }
+
+    if (context.Response.Headers.ContainsKey("Access-Control-Allow-Origin"))
+        logger.LogInformation(
+            $"Response Access-Control-Allow-Origin: {context.Response.Headers["Access-Control-Allow-Origin"]}");
+});
+
+app.UseCors("AllowEduSystem");
 app.UseMiddleware<GlobalExceptionHandllingMiddleware>();
 
 // Configure the HTTP request pipeline.
