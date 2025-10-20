@@ -63,9 +63,9 @@ builder.Services.AddSwaggerGen(options =>
     // API document
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Movie Theater API",
+        Title = "EduSystem API",
         Version = "v1",
-        Description = "API documentation for Movie Theater System"
+        Description = "API documentation for EduSystem"
     });
     options.EnableAnnotations();
 
