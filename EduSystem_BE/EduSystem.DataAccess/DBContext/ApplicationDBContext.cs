@@ -1,5 +1,5 @@
-﻿using EduSystem.Models.Entities;
-using EduSystem.Models.Seed;
+﻿using EduSystem.DataAccess.Seed;
+using EduSystem.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
