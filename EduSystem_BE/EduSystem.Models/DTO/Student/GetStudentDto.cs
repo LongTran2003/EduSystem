@@ -7,7 +7,6 @@ namespace EduSystem.Models.DTO.Student
         public string StudentId { get; set; } = null!;
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string? IdentityCard { get; set; }
         public DateTime BirthDate { get; set; }
         public string? Gender { get; set; }
         public string PhoneNumber { get; set; } = null!;

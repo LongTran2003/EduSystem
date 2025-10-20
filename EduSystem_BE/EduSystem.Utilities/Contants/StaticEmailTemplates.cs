@@ -6,7 +6,6 @@
         public const string Welcome = "WelcomeEmail";
         public const string Verification = "VerificationEmail";
         public const string PasswordReset = "PasswordResetEmail";
-        //public const string BookingSuccess = "BookingSuccessEmail";
         public const string ChangePassword = "ChangePasswordEmail";
     }
 }

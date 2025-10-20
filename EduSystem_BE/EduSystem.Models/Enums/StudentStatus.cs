@@ -2,7 +2,7 @@
 {
     public enum StudentStatus
     {
-        active,
-        inactive
+        Active,
+        Inactive
     }
 }

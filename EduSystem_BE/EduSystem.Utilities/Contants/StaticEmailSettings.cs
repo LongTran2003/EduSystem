@@ -10,7 +10,7 @@
         public const string SmtpPort = "EmailSettings:SmtpPort";
         public const string UseSsl = "EmailSettings:UseSsl";
 
-        public const string SenderName = "Movok";
+        public const string SenderName = "EduSystem";
         public const string SenderEmail = "quylongtranngoc07@gmail.com";
 
     }
