@@ -4,6 +4,15 @@ namespace EduSystem.DataAccess.IRepositories
 {
     public interface ITeacherRepository : IRepository<Teacher>
     {
+        Task<(List<Teacher> Teachers, int TotalTeachers)> GetTeachersAsync(
+            int pageNumber,
+            int pageSize,
+            string? filterOn,
+            string? filterQuery,
+            string? sortBy,
+            bool isAdmin = false,
+            string? includeProperties = null);
+
         void Update(Teacher teacher);
         Task<string> GetNextTeacherCodeAsync();
     }
