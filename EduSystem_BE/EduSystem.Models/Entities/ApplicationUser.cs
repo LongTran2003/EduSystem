@@ -10,9 +10,6 @@ namespace EduSystem.Models.Entities
 
         public DateTime BirthDate { get; set; }
 
-        //[StringLength(12)]
-        //public string? IdentityCard { get; set; }
-
         [StringLength(100)]
         public string? Address { get; set; }
 

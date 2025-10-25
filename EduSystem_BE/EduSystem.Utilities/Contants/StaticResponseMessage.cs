@@ -15,5 +15,25 @@
             public const string NotUpdated = "Failed to update user";
             public const string NotRetrieved = "Failed to retrieve user(s)";
         }
+
+        public static class Student
+        {
+            public const string Invalid = "Invalid student information provided";
+            public const string NotFound = "No student found";
+            public const string Found = "Student found";
+            public const string Retrieved = "Student information retrieved successfully";
+            public const string NotExisted = "Student is not exist!";
+
+        }
+
+        public static class Teacher
+        {
+            public const string Invalid = "Invalid teacher information provided";
+            public const string NotFound = "No teacher found";
+            public const string Found = "Teacher found";
+            public const string Retrieved = "Teacher information retrieved successfully";
+            public const string NotExisted = "Teacher is not exist!";
+
+        }
     }
 }

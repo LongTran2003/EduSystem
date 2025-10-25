@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduSystem.Models.DTO.Authentication;
 using EduSystem.Models.DTO.Student;
+using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 
 namespace EduSystem.Services.Mapping
@@ -60,6 +61,25 @@ namespace EduSystem.Services.Mapping
 
 
             ////// Add more mappings as needed
+
+
+            // Teacher to GetTeacherDto 
+            CreateMap<Teacher, GetTeacherDto>()
+                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => src.ApplicationUser.FullName))
+                .ForMember(dest => dest.TeacherEmail, opt => opt.MapFrom(src => src.ApplicationUser.Email))
+                .ForMember(dest => dest.TeacherDOB, opt => opt.MapFrom(src => src.ApplicationUser.BirthDate))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.ApplicationUser.Gender))
+                .ForMember(dest => dest.OfficePhone, opt => opt.MapFrom(src => src.OfficePhone))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.ApplicationUser.Address))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ApplicationUser.ImageUrl))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.TeacherCode, opt => opt.MapFrom(src => src.TeacherCode))
+                .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department))
+                .ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.Specialization))
+                .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
+                .ForMember(dest => dest.HireDate, opt => opt.MapFrom(src => src.HireDate))
+                .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio));
         }
     }
 }
