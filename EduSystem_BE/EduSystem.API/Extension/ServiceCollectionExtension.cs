@@ -32,8 +32,9 @@ namespace EduSystem.API.Extension
             services.AddScoped<IManageUserAccountService, ManageUserAccountService>();
 
             // add services here
-
-
+            services.AddScoped<IAutoMapperService, AutoMapperService>();
+            services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<ITeacherService, TeacherService>();
 
             return services;
         }
