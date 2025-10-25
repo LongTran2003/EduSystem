@@ -2,7 +2,9 @@
 {
     public enum TeacherStatus
     {
-        Active,
-        Inactive
+        Active, // Hoạt động
+        Inactive, // Không hoạt động
+        OnLeave, // Nghỉ phép
+        Retired // Đã nghỉ hưu
     }
 }
