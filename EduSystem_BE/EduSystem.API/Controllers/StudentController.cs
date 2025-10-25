@@ -20,9 +20,15 @@ namespace EduSystem.API.Controllers
         [HttpGet]
         [Authorize(Roles = "ADMIN")]
         [SwaggerOperation(Summary = "API get all students's account", Description = "Requires Admin")]
-        public async Task<IActionResult> GetAllStudent()
+        public async Task<IActionResult> GetAllStudent(
+            [FromQuery] int pageNumber = 1,
+            int pageSize = 10,
+            string? filterOn = null,
+            string? filterQuery = null,
+            string? sortBy = null)
         {
-            var response = await _studentService.GetAllStudent();
+            var response = await _studentService.GetAllStudent(
+                User, pageNumber, pageSize, filterOn, filterQuery, sortBy);
             return StatusCode(response.StatusCode, response);
         }
 

@@ -5,6 +5,7 @@ using EduSystem.Models.DTO.Student;
 using EduSystem.Models.Entities;
 using EduSystem.Services.Helpers.Responses;
 using EduSystem.Services.IServices;
+using EduSystem.Utilities.Constants;
 using EduSystem.Utilities.Contants;
 using System.Security.Claims;
 
@@ -21,21 +22,72 @@ namespace EduSystem.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<ResponseDto> GetAllStudent()
+        public async Task<ResponseDto> GetAllStudent
+            (
+            ClaimsPrincipal User,
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? filterOn = null,
+            string? filterQuery = null,
+            string? sortBy = null
+            )
         {
-            var studentFromDB = await _unitOfWork.Student.GetAllAsync(includeProperties: nameof(ApplicationUser));
+            try
+            {
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            bool isAdmin = userRole == StaticUserRoles.Admin;
 
-            var studentsDto = _mapper.Map<IEnumerable<Student>>(studentFromDB);
+            var (students, totalStudents) = await _unitOfWork.Student
+                .GetStudentsAsync(
+                    pageNumber,
+                    pageSize,
+                    filterOn,
+                    filterQuery,
+                    sortBy,
+                    isAdmin,
+                    includeProperties: nameof(ApplicationUser)
+                );
 
-            return studentFromDB.Any()
-                ? SuccessResponse.Build(
-                    message: StaticResponseMessage.Student.Found,
-                    statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: studentsDto)
-                : ErrorResponse.Build(
-                    message: StaticResponseMessage.Student.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-        }
+            var studentsDto = _mapper.Map<IEnumerable<Student>>(students);
+
+            var result = new
+            {
+                Data = studentsDto,
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalStudents,
+                TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize),
+                HasPreviousPage = pageNumber > 1,
+                HasNextPage = pageNumber < (int)Math.Ceiling((double)totalStudents / pageSize)
+            };
+
+            return SuccessResponse.Build(
+                message: StaticResponseMessage.Student.Found,
+                statusCode: StaticOperationStatus.StatusCode.Ok,
+                result: result);
+            }
+            catch (Exception ex)
+            {
+                return ErrorResponse.Build(
+                    message: $"Error retrieving students: {ex.Message}",
+                    statusCode: StaticOperationStatus.StatusCode.InternalServerError
+                );
+            }
+
+
+    //var studentFromDB = await _unitOfWork.Student.GetAllAsync(includeProperties: nameof(ApplicationUser));
+
+    //var studentsDto = _mapper.Map<IEnumerable<Student>>(studentFromDB);
+
+    //return studentFromDB.Any()
+    //    ? SuccessResponse.Build(
+    //        message: StaticResponseMessage.Student.Found,
+    //        statusCode: StaticOperationStatus.StatusCode.Ok,
+    //        result: studentsDto)
+    //    : ErrorResponse.Build(
+    //        message: StaticResponseMessage.Student.NotFound,
+    //        statusCode: StaticOperationStatus.StatusCode.NotFound);
+}
 
         public async Task<ResponseDto> GetStudentDetailsById(ClaimsPrincipal user, Guid studentId)
         {

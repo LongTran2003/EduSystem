@@ -5,6 +5,7 @@ using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 using EduSystem.Services.Helpers.Responses;
 using EduSystem.Services.IServices;
+using EduSystem.Utilities.Constants;
 using EduSystem.Utilities.Contants;
 using System.Security.Claims;
 using static EduSystem.Utilities.Contants.StaticResponseMessage;
@@ -22,20 +23,71 @@ namespace EduSystem.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<ResponseDto> GetAllTeachers()
+        public async Task<ResponseDto> GetAllTeachers
+            (
+            ClaimsPrincipal User,
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? filterOn = null,
+            string? filterQuery = null,
+            string? sortBy = null
+            )
         {
-            var teacherFromDB = await _unitOfWork.Teacher.GetAllAsync(includeProperties: nameof(ApplicationUser));
+            try
+            {
+                var userRole = User.FindFirstValue(ClaimTypes.Role);
+                bool isAdmin = userRole == StaticUserRoles.Admin;
 
-            var teachersDto = _mapper.Map<IEnumerable<Models.Entities.Teacher>>(teacherFromDB);
+                var (teachers, totalTeachers) = await _unitOfWork.Teacher
+                    .GetTeachersAsync(
+                        pageNumber,
+                        pageSize,
+                        filterOn,
+                        filterQuery,
+                        sortBy,
+                        isAdmin,
+                        includeProperties: nameof(ApplicationUser)
+                    );
 
-            return teacherFromDB.Any()
-                ? SuccessResponse.Build(
+                var teachersDto = _mapper.Map<IEnumerable<Models.Entities.Teacher>>(teachers);
+
+                var result = new
+                {
+                    Data = teachersDto,
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = totalTeachers,
+                    TotalPages = (int)Math.Ceiling((double)totalTeachers / pageSize),
+                    HasPreviousPage = pageNumber > 1,
+                    HasNextPage = pageNumber < (int)Math.Ceiling((double)totalTeachers / pageSize)
+                };
+
+                return SuccessResponse.Build(
                     message: StaticResponseMessage.Teacher.Found,
                     statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: teachersDto)
-                : ErrorResponse.Build(
-                    message: StaticResponseMessage.Teacher.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+                    result: result
+                );
+            }
+            catch (Exception ex)
+            {
+                return ErrorResponse.Build(
+                    message: $"An error occurred while retrieving teachers: {ex.Message}",
+                    statusCode: StaticOperationStatus.StatusCode.InternalServerError
+                );
+            }
+
+            //var teacherFromDB = await _unitOfWork.Teacher.GetAllAsync(includeProperties: nameof(ApplicationUser));
+
+            //var teachersDto = _mapper.Map<IEnumerable<Models.Entities.Teacher>>(teacherFromDB);
+
+            //return teacherFromDB.Any()
+            //    ? SuccessResponse.Build(
+            //        message: StaticResponseMessage.Teacher.Found,
+            //        statusCode: StaticOperationStatus.StatusCode.Ok,
+            //        result: teachersDto)
+            //    : ErrorResponse.Build(
+            //        message: StaticResponseMessage.Teacher.NotFound,
+            //        statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
 
         public async Task<ResponseDto> GetTeacherDetailsById(ClaimsPrincipal user, Guid teacherId)

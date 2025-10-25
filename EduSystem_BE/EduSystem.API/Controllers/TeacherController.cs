@@ -21,9 +21,15 @@ namespace EduSystem.API.Controllers
         [HttpGet]
         [Authorize(Roles = "ADMIN")]
         [SwaggerOperation(Summary = "API get all teachers's account", Description = "Requires Admin")]
-        public async Task<IActionResult> GetAllTeachers()
+        public async Task<IActionResult> GetAllTeachers(
+            [FromQuery] int pageNumber = 1,
+            int pageSize = 10,
+            string? filterOn = null,
+            string? filterQuery = null,
+            string? sortBy = null)
         {
-            var response = await _teacherService.GetAllTeachers();
+            var response = await _teacherService.GetAllTeachers(
+                User, pageNumber, pageSize, filterOn, filterQuery, sortBy);
             return StatusCode(response.StatusCode, response);
         }
 
