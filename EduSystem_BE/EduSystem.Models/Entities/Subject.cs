@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EduSystem.Models.Enums;
+using EduSystem.Utilities.Contants;
 
 namespace EduSystem.Models.Entities
 {
@@ -21,6 +23,8 @@ namespace EduSystem.Models.Entities
 
         [StringLength(100)]
         public string? SubjectCode { get; set; } // Mã môn học: ENG10, ENG11, ENG12
+        
+        public string Status { get; set; } = StaticOperationStatus.BaseEntity.Active;
 
         // Navigation properties
         public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();

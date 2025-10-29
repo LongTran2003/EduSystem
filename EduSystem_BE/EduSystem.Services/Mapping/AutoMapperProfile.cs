@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EduSystem.Models.DTO.Authentication;
 using EduSystem.Models.DTO.Student;
+using EduSystem.Models.DTO.Subject;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 
@@ -80,6 +81,26 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Position, opt => opt.MapFrom(src => src.Position))
                 .ForMember(dest => dest.HireDate, opt => opt.MapFrom(src => src.HireDate))
                 .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio));
+            
+            // Subject to CreateSubjectDto
+            CreateMap<Subject, CreateSubjectDto>()
+                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.SubjectName))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
+                .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
+                .ForMember(dest => dest.SubjectCode, opt => opt.MapFrom(src => src.SubjectCode))
+                .ReverseMap();
+
+            // Subject to UpdateSubjectDto
+            CreateMap<Subject, UpdateSubjectDto>()
+                .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.SubjectName))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
+                .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
+                .ForMember(dest => dest.SubjectCode, opt => opt.MapFrom(src => src.SubjectCode))
+                .ReverseMap();
+
+
         }
     }
 }
