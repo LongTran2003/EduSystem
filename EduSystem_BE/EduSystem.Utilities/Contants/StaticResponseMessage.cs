@@ -45,9 +45,24 @@
             public const string NotFound = "No subject found";
             public const string Found = "Subject found";
             public const string Retrieved = "Subject information retrieved successfully";
+            public const string NotRetrieved = "Subject information cannot retrieved";
             public const string Deleted = "Subject deleted successfully";
             public const string NotDeleted = "Subject cannot delete";
 
+        }
+
+        public static class Lesson
+        {
+            public const string Created = "Lesson(s) created successfully";
+            public const string NotCreated = "Lesson(s) cannot create beacause: ";
+            public const string Updated = "Lesson(s) updated successfully";
+            public const string NotUpdated = "Lesson cannot update";
+            public const string NotFound = "Lesson not found";
+            public const string Found = "Lesson found";
+            public const string Retrieved = "Lesson information retrieved successfully";
+            public const string NotRetrieved = "Lesson information cannot retrieved";
+            public const string Deleted = "Lesson(s) deleted successfully";
+            public const string NotDeleted = "Lesson cannot delete";
         }
     }
 }

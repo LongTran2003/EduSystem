@@ -2,7 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using EduSystem.DataAccess.IRepositories;
 using EduSystem.Models.DTO;
-using EduSystem.Models.DTO.Subject;
+using EduSystem.Models.DTO.Lesson;
 using EduSystem.Models.Entities;
 using EduSystem.Services.Helpers.Responses;
 using EduSystem.Services.IServices;
@@ -11,32 +11,32 @@ using EduSystem.Utilities.Contants;
 
 namespace EduSystem.Services.Services;
 
-public class SubjectService : ISubjectService
+public class LessonService : ILessonService
 {
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-
-    public SubjectService(IUnitOfWork unitOfWork, IMapper mapper)
+    
+    public LessonService(IMapper mapper, IUnitOfWork unitOfWork)
     {
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
-    public async Task<ResponseDto> CreateSubject(ClaimsPrincipal user, CreateSubjectDto createSubjectDto)
+    public async Task<ResponseDto> CreateLesson(ClaimsPrincipal user, CreateLessonDto createLessonDto)
     {
         try
         {
-            var subject = _mapper.Map<CreateSubjectDto, Subject>(createSubjectDto);
-            subject.CreatedBy = user.FindFirstValue("Fullname");
-            subject.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
+            var lesson = _mapper.Map<CreateLessonDto, Lesson>(createLessonDto);
+            lesson.CreatedBy = user.FindFirstValue("Fullname");
+            lesson.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
 
-            await _unitOfWork.Subject.AddAsync(subject);
+            await _unitOfWork.Lesson.AddAsync(lesson);
             await _unitOfWork.SaveAsync();
 
             return SuccessResponse.Build(
                 message: StaticResponseMessage.Subject.Created,
                 statusCode: StaticOperationStatus.StatusCode.Created,
-                result: subject);
+                result: lesson);
         }
         catch (Exception ex)
         {
@@ -46,38 +46,37 @@ public class SubjectService : ISubjectService
         }
     }
 
-    public async Task<ResponseDto> UpdateSubject(ClaimsPrincipal user, UpdateSubjectDto updateSubjectDto)
+    public async Task<ResponseDto> UpdateLesson(ClaimsPrincipal user, UpdateLessonDto updateLessonDto)
     {
-        var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == updateSubjectDto.SubjectId);
-        if (subject == null)
+        var lesson = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == updateLessonDto.LessonId);
+        if (lesson == null)
         {
             return SuccessResponse.Build(
-                message: StaticResponseMessage.Subject.NotFound,
+                message: StaticResponseMessage.Lesson.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
                 result: null);
         }
         
-        var updateSubject = _mapper.Map<UpdateSubjectDto, Subject>(updateSubjectDto);
-        subject.UpdatedBy = user.FindFirstValue("Fullname");
-        subject.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
-        subject.Status = updateSubject.Status;
+        var updateLesson = _mapper.Map<UpdateLessonDto, Lesson>(updateLessonDto);
+        lesson.UpdatedBy = user.FindFirstValue("Fullname");
+        lesson.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+        lesson.Status = updateLesson.Status;
         
         // Update Subject
-        _unitOfWork.Subject.Update(subject, updateSubject);
+        _unitOfWork.Lesson.Update(lesson, updateLesson);
 
         return (!await SaveChangesAsync()) ?
             ErrorResponse.Build(
-                message: StaticResponseMessage.Subject.NotUpdated,
+                message: StaticResponseMessage.Lesson.NotUpdated,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError)
             :
             SuccessResponse.Build(
-                message: StaticResponseMessage.Subject.Updated,
+                message: StaticResponseMessage.Lesson.Updated,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: updateSubject);
-
+                result: updateLesson);
     }
 
-    public async Task<ResponseDto> GetAllSubjects
+    public async Task<ResponseDto> GetAllLessons
     (
         ClaimsPrincipal user, 
         int pageNumber = 1, 
@@ -85,7 +84,7 @@ public class SubjectService : ISubjectService
         string? filterOn = null,
         string? filterQuery = null, 
         string? sortBy = null
-    )
+        )
     {
         try
         {
@@ -93,14 +92,14 @@ public class SubjectService : ISubjectService
 
             bool isAdmin = userRole == StaticUserRoles.Admin;
 
-            var (subjects, totalSubjects) = await _unitOfWork.Subject.GetSubjectsAsync
+            var (lessons, totalLessons) = await _unitOfWork.Lesson.GetLessonsAsync
                 (pageNumber, pageSize, filterOn, filterQuery, sortBy, isAdmin);
 
-            if (subjects == null || !subjects.Any() || totalSubjects == 0)
+            if (lessons == null || !lessons.Any() || totalLessons == 0)
             {
                 var emptyResult = new
                 {
-                    Data = Enumerable.Empty<Subject>(),
+                    Data = Enumerable.Empty<Lesson>(),
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
                     TotalCount = 0,
@@ -110,38 +109,38 @@ public class SubjectService : ISubjectService
                 };
 
                 return SuccessResponse.Build(
-                    message: StaticResponseMessage.Subject.Found,
+                    message: StaticResponseMessage.Lesson.Found,
                     statusCode: StaticOperationStatus.StatusCode.Ok,
                     result: emptyResult);
             }
             
-            var subjectsDto = _mapper.Map<IEnumerable<Subject>>(subjects);
+            var lessonsDto = _mapper.Map<IEnumerable<Lesson>>(lessons);
 
             var result = new
             {
-                Data = subjectsDto,
+                Data = lessonsDto,
                 CurrentPage = pageNumber,
                 PageSize = pageSize,
-                TotalCount = totalSubjects,
-                TotalPages = (int)Math.Ceiling((double)totalSubjects / pageSize),
+                TotalCount = totalLessons,
+                TotalPages = (int)Math.Ceiling((double)totalLessons / pageSize),
                 HasPreviousPage = pageNumber > 1,
-                HasNextPage = pageNumber < (int)Math.Ceiling((double)totalSubjects / pageSize)
+                HasNextPage = pageNumber < (int)Math.Ceiling((double)totalLessons / pageSize)
             };
 
             return SuccessResponse.Build(
-                message: StaticResponseMessage.Subject.Retrieved,
+                message: StaticResponseMessage.Lesson.Retrieved,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
                 result: result);
         }
         catch (Exception ex)
         {
             return ErrorResponse.Build(
-                message: StaticResponseMessage.Subject.NotRetrieved + ex.Message,
+                message: StaticResponseMessage.Lesson.NotRetrieved + ex.Message,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
     }
 
-    public async Task<ResponseDto> GetSubjectById(ClaimsPrincipal user, Guid subjectId)
+    public async Task<ResponseDto> GetLessonById(ClaimsPrincipal user, Guid lessonId)
     {
         if (user.FindFirstValue(ClaimTypes.NameIdentifier) is null)
         {
@@ -150,20 +149,20 @@ public class SubjectService : ISubjectService
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
         
-        var getSubjectById = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == subjectId
-                            && s.Status != StaticOperationStatus.BaseEntity.Deleted);
-        return (getSubjectById is null) ?
+        var getLessonById = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == lessonId 
+                                                                    && s.Status != StaticOperationStatus.BaseEntity.Deleted);
+        return (getLessonById is null) ?
             ErrorResponse.Build(
-                message: StaticResponseMessage.Subject.NotFound,
+                message: StaticResponseMessage.Lesson.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.NotFound) 
             :
             SuccessResponse.Build(
-                message: StaticResponseMessage.Subject.Found,
+                message: StaticResponseMessage.Lesson.Found,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: getSubjectById);
+                result: getLessonById);
     }
 
-    public async Task<ResponseDto> DeleteSubject(ClaimsPrincipal user, Guid subjectId)
+    public async Task<ResponseDto> DeleteLesson(ClaimsPrincipal user, Guid lessonId)
     {
         if (user.FindFirstValue(ClaimTypes.NameIdentifier) is null)
         {
@@ -172,27 +171,27 @@ public class SubjectService : ISubjectService
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
 
-        var deleteSubject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == subjectId
-                            &&  s.Status != StaticOperationStatus.BaseEntity.Deleted);
-        if (deleteSubject is null)
+        var deleteLesson = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == lessonId
+                                                                    &&  s.Status != StaticOperationStatus.BaseEntity.Deleted);
+        if (deleteLesson is null)
         {
             return ErrorResponse.Build(
-                message: StaticResponseMessage.Subject.NotFound,
+                message: StaticResponseMessage.Lesson.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
 
-        deleteSubject.Status = StaticOperationStatus.BaseEntity.Deleted;
-        deleteSubject.UpdatedBy = user.FindFirstValue("Fullname");
-        deleteSubject.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+        deleteLesson.Status = StaticOperationStatus.BaseEntity.Deleted;
+        deleteLesson.UpdatedBy = user.FindFirstValue("Fullname");
+        deleteLesson.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         
         return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
-                message: StaticResponseMessage.Subject.Deleted,
+                message: StaticResponseMessage.Lesson.Deleted,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: deleteSubject)
+                result: deleteLesson)
             :
             ErrorResponse.Build(
-                message: StaticResponseMessage.Subject.NotDeleted,
+                message: StaticResponseMessage.Lesson.NotDeleted,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
     }
     

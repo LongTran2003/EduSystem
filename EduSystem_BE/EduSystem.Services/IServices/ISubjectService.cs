@@ -10,7 +10,7 @@ public interface ISubjectService
     Task<ResponseDto> UpdateSubject(ClaimsPrincipal user, UpdateSubjectDto updateSubjectDto);
     Task<ResponseDto> GetAllSubjects
     (
-        ClaimsPrincipal User,
+        ClaimsPrincipal user,
         int pageNumber = 1,
         int pageSize = 10,
         string? filterOn = null,

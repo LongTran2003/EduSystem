@@ -49,6 +49,25 @@ namespace EduSystem.Services.Services
                         includeProperties: nameof(ApplicationUser)
                     );
 
+                if (teachers == null || !teachers.Any() || totalTeachers == 0)
+                {
+                    var emptyResult = new
+                    {
+                        Data = Enumerable.Empty<Models.Entities.Teacher>(),
+                        CurrentPage = pageNumber,
+                        PageSize = pageSize,
+                        TotalCount = 0,
+                        TotalPages = 0,
+                        HasPreviousPage = false,
+                        HasNextPage = false
+                    };
+
+                    return SuccessResponse.Build(
+                        message: StaticResponseMessage.Teacher.Found,
+                        statusCode: StaticOperationStatus.StatusCode.Ok,
+                        result: emptyResult);
+                }
+                
                 var teachersDto = _mapper.Map<IEnumerable<Models.Entities.Teacher>>(teachers);
 
                 var result = new
