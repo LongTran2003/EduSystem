@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduSystem.Models.Entities
 {
-    public class Teacher : BaseEntity<string, string, string>
+    public class Teacher
     {
         [Key]
         public Guid TeacherId { get; set; }

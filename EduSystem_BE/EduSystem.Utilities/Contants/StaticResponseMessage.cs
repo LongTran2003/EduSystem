@@ -35,5 +35,19 @@
             public const string NotExisted = "Teacher is not exist!";
 
         }
+        
+        public static class Subject
+        {
+            public const string Created = "Subject(s) created successfully";
+            public const string NotCreated = "Subject(s) cannot create beacause: ";
+            public const string Updated = "Subject updated successfully";
+            public const string NotUpdated = "Subject cannot update";
+            public const string NotFound = "No subject found";
+            public const string Found = "Subject found";
+            public const string Retrieved = "Subject information retrieved successfully";
+            public const string Deleted = "Subject deleted successfully";
+            public const string NotDeleted = "Subject cannot delete";
+
+        }
     }
 }

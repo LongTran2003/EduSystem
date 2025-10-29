@@ -53,13 +53,13 @@ namespace EduSystem.DataAccess.Repositories
             }
 
             // Include properties
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                if (!string.IsNullOrEmpty(includeProperties))
                 {
-                    query = query.Include(property);
+                    foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        query = query.Include(property);
+                    }
                 }
-            }
 
             // Get total count
             int totalTeachers = await query.CountAsync();

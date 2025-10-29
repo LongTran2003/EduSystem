@@ -2,10 +2,10 @@
 {
     public enum StudentStatus
     {
-        Active, // Đang học
-        Inactive, // Bỏ học
-        Graduated, // Đã tốt nghiệp
-        Suspended // Bị đình chỉ
+        Active = 1, // Đang học
+        Inactive = 0, // Bỏ học
+        Graduated = 2, // Đã tốt nghiệp
+        Suspended = 3 // Bị đình chỉ
 
     }
 }
