@@ -34,60 +34,79 @@ namespace EduSystem.Services.Services
         {
             try
             {
-            var userRole = User.FindFirstValue(ClaimTypes.Role);
-            bool isAdmin = userRole == StaticUserRoles.Admin;
+                var userRole = User.FindFirstValue(ClaimTypes.Role);
+                bool isAdmin = userRole == StaticUserRoles.Admin;
 
-            var (students, totalStudents) = await _unitOfWork.Student
-                .GetStudentsAsync(
-                    pageNumber,
-                    pageSize,
-                    filterOn,
-                    filterQuery,
-                    sortBy,
-                    isAdmin,
-                    includeProperties: nameof(ApplicationUser)
-                );
+                var (students, totalStudents) = await _unitOfWork.Student
+                    .GetStudentsAsync(
+                        pageNumber,
+                        pageSize,
+                        filterOn,
+                        filterQuery,
+                        sortBy,
+                        isAdmin,
+                        includeProperties: nameof(ApplicationUser)
+                    );
 
-            var studentsDto = _mapper.Map<IEnumerable<Student>>(students);
+                if (students == null || !students.Any() || totalStudents == 0)
+                {
+                    var emptyResult = new
+                    {
+                        Data = Enumerable.Empty<Student>(),
+                        CurrentPage = pageNumber,
+                        PageSize = pageSize,
+                        TotalCount = 0,
+                        TotalPages = 0,
+                        HasPreviousPage = false,
+                        HasNextPage = false
+                    };
 
-            var result = new
-            {
-                Data = studentsDto,
-                CurrentPage = pageNumber,
-                PageSize = pageSize,
-                TotalCount = totalStudents,
-                TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize),
-                HasPreviousPage = pageNumber > 1,
-                HasNextPage = pageNumber < (int)Math.Ceiling((double)totalStudents / pageSize)
-            };
+                    return SuccessResponse.Build(
+                        message: StaticResponseMessage.Student.NotFound,
+                        statusCode: StaticOperationStatus.StatusCode.Ok,
+                        result: emptyResult);
+                }
 
-            return SuccessResponse.Build(
-                message: StaticResponseMessage.Student.Found,
-                statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: result);
+                var studentsDto = _mapper.Map<IEnumerable<Student>>(students);
+
+                var result = new
+                {
+                    Data = studentsDto,
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = totalStudents,
+                    TotalPages = (int)Math.Ceiling((double)totalStudents / pageSize),
+                    HasPreviousPage = pageNumber > 1,
+                    HasNextPage = pageNumber < (int)Math.Ceiling((double)totalStudents / pageSize)
+                };
+
+                return SuccessResponse.Build(
+                    message: StaticResponseMessage.Student.Found,
+                    statusCode: StaticOperationStatus.StatusCode.Ok,
+                    result: result);
             }
             catch (Exception ex)
             {
                 return ErrorResponse.Build(
-                    message: $"Error retrieving students: {ex.Message}",
+                    message: StaticResponseMessage.Student.NotRetrieved + ex.Message,
                     statusCode: StaticOperationStatus.StatusCode.InternalServerError
                 );
             }
 
 
-    //var studentFromDB = await _unitOfWork.Student.GetAllAsync(includeProperties: nameof(ApplicationUser));
+            //var studentFromDB = await _unitOfWork.Student.GetAllAsync(includeProperties: nameof(ApplicationUser));
 
-    //var studentsDto = _mapper.Map<IEnumerable<Student>>(studentFromDB);
+            //var studentsDto = _mapper.Map<IEnumerable<Student>>(studentFromDB);
 
-    //return studentFromDB.Any()
-    //    ? SuccessResponse.Build(
-    //        message: StaticResponseMessage.Student.Found,
-    //        statusCode: StaticOperationStatus.StatusCode.Ok,
-    //        result: studentsDto)
-    //    : ErrorResponse.Build(
-    //        message: StaticResponseMessage.Student.NotFound,
-    //        statusCode: StaticOperationStatus.StatusCode.NotFound);
-}
+            //return studentFromDB.Any()
+            //    ? SuccessResponse.Build(
+            //        message: StaticResponseMessage.Student.Found,
+            //        statusCode: StaticOperationStatus.StatusCode.Ok,
+            //        result: studentsDto)
+            //    : ErrorResponse.Build(
+            //        message: StaticResponseMessage.Student.NotFound,
+            //        statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
 
         public async Task<ResponseDto> GetStudentDetailsById(ClaimsPrincipal user, Guid studentId)
         {

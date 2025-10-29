@@ -22,6 +22,7 @@
             public const string NotFound = "No student found";
             public const string Found = "Student found";
             public const string Retrieved = "Student information retrieved successfully";
+            public const string NotRetrieved = "Student information cannot retrieve";
             public const string NotExisted = "Student is not exist!";
 
         }
