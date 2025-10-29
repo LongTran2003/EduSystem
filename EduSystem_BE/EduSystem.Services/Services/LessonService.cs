@@ -34,14 +34,14 @@ public class LessonService : ILessonService
             await _unitOfWork.SaveAsync();
 
             return SuccessResponse.Build(
-                message: StaticResponseMessage.Subject.Created,
+                message: StaticResponseMessage.Lesson.Created,
                 statusCode: StaticOperationStatus.StatusCode.Created,
                 result: lesson);
         }
         catch (Exception ex)
         {
             return ErrorResponse.Build(
-                message: StaticResponseMessage.Subject.NotCreated + ex.Message,
+                message: StaticResponseMessage.Lesson.NotCreated + ex.Message,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
     }

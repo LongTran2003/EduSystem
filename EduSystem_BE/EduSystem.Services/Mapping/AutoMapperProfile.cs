@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EduSystem.Models.DTO.Authentication;
+using EduSystem.Models.DTO.Lesson;
+using EduSystem.Models.DTO.Quiz;
 using EduSystem.Models.DTO.Student;
 using EduSystem.Models.DTO.Subject;
 using EduSystem.Models.DTOs.Teacher;
@@ -82,7 +84,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.HireDate, opt => opt.MapFrom(src => src.HireDate))
                 .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio));
             
-            // Subject to CreateSubjectDto
+            // Subject to SubjectDto
             CreateMap<Subject, CreateSubjectDto>()
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.SubjectName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
@@ -91,15 +93,68 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.SubjectCode, opt => opt.MapFrom(src => src.SubjectCode))
                 .ReverseMap();
 
-            // Subject to UpdateSubjectDto
             CreateMap<Subject, UpdateSubjectDto>()
+                .ForMember(dest => dest.SubjectId, opt => opt.MapFrom(src => src.SubjectId))
                 .ForMember(dest => dest.SubjectName, opt => opt.MapFrom(src => src.SubjectName))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
                 .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
                 .ForMember(dest => dest.SubjectCode, opt => opt.MapFrom(src => src.SubjectCode))
                 .ReverseMap();
-
+            
+            // Lesson to LessonDto
+            CreateMap<Lesson, CreateLessonDto>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
+                .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
+                .ForMember(dest => dest.LessonType, opt => opt.MapFrom(src => src.LessonType))
+                .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
+                .ReverseMap();
+            
+            CreateMap<Lesson, UpdateLessonDto>()
+                .ForMember(dest => dest.LessonId, opt => opt.MapFrom(src => src.LessonId))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
+                .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
+                .ForMember(dest => dest.LessonType, opt => opt.MapFrom(src => src.LessonType))
+                .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
+                .ReverseMap();
+            
+            // Quiz to QuizDto
+            CreateMap<Quiz, CreateQuizDto>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
+                .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
+                .ForMember(dest => dest.TimeLimit, opt => opt.MapFrom(src => src.TimeLimit))
+                .ForMember(dest => dest.TotalQuestions, opt => opt.MapFrom(src => src.TotalQuestions))
+                .ForMember(dest => dest.TotalPoints, opt => opt.MapFrom(src => src.TotalPoints))
+                .ForMember(dest => dest.IsPublished, opt => opt.MapFrom(src => src.IsPublished))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.MaxAttempts, opt => opt.MapFrom(src => src.MaxAttempts))
+                .ForMember(dest => dest.SubjectId, opt => opt.MapFrom(src => src.SubjectId))
+                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
+                .ReverseMap();
+            
+            CreateMap<Quiz, UpdateQuizDto>()
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.GradeLevel, opt => opt.MapFrom(src => src.GradeLevel))
+                .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
+                .ForMember(dest => dest.TimeLimit, opt => opt.MapFrom(src => src.TimeLimit))
+                .ForMember(dest => dest.TotalQuestions, opt => opt.MapFrom(src => src.TotalQuestions))
+                .ForMember(dest => dest.TotalPoints, opt => opt.MapFrom(src => src.TotalPoints))
+                .ForMember(dest => dest.IsPublished, opt => opt.MapFrom(src => src.IsPublished))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.MaxAttempts, opt => opt.MapFrom(src => src.MaxAttempts))
+                .ForMember(dest => dest.SubjectId, opt => opt.MapFrom(src => src.SubjectId))
+                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
+                .ReverseMap();
 
         }
     }

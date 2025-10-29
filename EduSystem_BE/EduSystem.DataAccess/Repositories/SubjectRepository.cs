@@ -15,7 +15,7 @@ namespace EduSystem.DataAccess.Repositories
             _context = context;
         }
 
-        public async Task<(List<Subject> Subjects, int TotalSubjects)> GetSubjectsAsync
+        public async Task<(List<Subject> subjects, int totalSubjects)> GetSubjectsAsync
         (
             int pageNumber,
             int pageSize,

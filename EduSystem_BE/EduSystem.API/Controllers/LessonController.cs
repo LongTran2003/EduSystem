@@ -1,6 +1,5 @@
 using EduSystem.Models.DTO;
 using EduSystem.Models.DTO.Lesson;
-using EduSystem.Models.DTO.Subject;
 using EduSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -65,5 +65,19 @@
             public const string Deleted = "Lesson(s) deleted successfully";
             public const string NotDeleted = "Lesson cannot delete";
         }
+        
+        public static class Quiz
+        {
+            public const string Created = "Quiz(zes) created successfully";
+            public const string NotCreated = "Quiz(zes) cannot create beacause: ";
+            public const string Updated = "Quiz(zes) updated successfully";
+            public const string NotUpdated = "Quiz cannot update";
+            public const string NotFound = "Quiz not found";
+            public const string Found = "Quiz found";
+            public const string Retrieved = "Quiz information retrieved successfully";
+            public const string NotRetrieved = "Quiz information cannot retrieved";
+            public const string Deleted = "Quiz(zes) deleted successfully";
+            public const string NotDeleted = "Quiz cannot delete";
+        }
     }
 }

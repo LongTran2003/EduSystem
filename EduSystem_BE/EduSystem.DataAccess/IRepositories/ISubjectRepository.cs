@@ -4,7 +4,7 @@ namespace EduSystem.DataAccess.IRepositories
 {
     public interface ISubjectRepository : IRepository<Subject>
     {
-        Task<(List<Subject> Subjects, int TotalSubjects)> GetSubjectsAsync
+        Task<(List<Subject> subjects, int totalSubjects)> GetSubjectsAsync
             (
                 int pageNumber,
                 int pageSize,
