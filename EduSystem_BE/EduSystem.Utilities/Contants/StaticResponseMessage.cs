@@ -14,6 +14,7 @@
             public const string NotDeleted = "Failed to delete user";
             public const string NotUpdated = "Failed to update user";
             public const string NotRetrieved = "Failed to retrieve user(s)";
+            public const string NotAuthorized = "User not authorized";
         }
 
         public static class Student
@@ -24,7 +25,7 @@
             public const string Retrieved = "Student information retrieved successfully";
             public const string NotRetrieved = "Student information cannot retrieve";
             public const string NotExisted = "Student is not exist!";
-
+            public const string Updated = "Student updated successfully";
         }
 
         public static class Teacher
@@ -34,6 +35,7 @@
             public const string Found = "Teacher found";
             public const string Retrieved = "Teacher information retrieved successfully";
             public const string NotExisted = "Teacher is not exist!";
+            public const string Updated = "Teacher updated successfully";
 
         }
         

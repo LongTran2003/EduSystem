@@ -1,4 +1,5 @@
-﻿using EduSystem.Services.IServices;
+﻿using EduSystem.Models.DTO.Student;
+using EduSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -43,10 +44,20 @@ namespace EduSystem.API.Controllers
 
         [HttpGet("{studentId:guid}")]
         [Authorize(Roles = "ADMIN")]
-        [SwaggerOperation(Summary = "API gets all student's account by id", Description = "Requires admin roles")]
+        [SwaggerOperation(Summary = "API gets all student's account by id", Description = "Requires Admin roles")]
         public async Task<IActionResult> GetStudentDetailsById(Guid studentId)
         {
             var response = await _studentService.GetStudentDetailsById(User, studentId);
+            return StatusCode(response.StatusCode, response);
+        }
+        
+        [HttpPut("status")]
+        [Authorize(Roles = "ADMIN")]
+        [SwaggerOperation(Summary = "Update student status", Description = "Requires Admin " +
+        "|| Active = 1 (Đang học); Inactive = 0 (Bỏ học); Graduated = 2 (Đã tốt nghiệp); Suspended = 3 (Bị đình chỉ)")]
+        public async Task<IActionResult> UpdateStudentStatus([FromBody] UpdateStudentStatusDto updateStudentStatusDto)
+        {
+            var response = await _studentService.UpdateStudentStatus(User, updateStudentStatusDto);
             return StatusCode(response.StatusCode, response);
         }
     }

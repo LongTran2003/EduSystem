@@ -1,4 +1,5 @@
-﻿using EduSystem.Services.IServices;
+﻿using EduSystem.Models.DTOs.Teacher;
+using EduSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -47,6 +48,16 @@ namespace EduSystem.API.Controllers
         public async Task<IActionResult> GetStudentDetailsById(Guid studentId)
         {
             var response = await _teacherService.GetTeacherDetailsById(User, studentId);
+            return StatusCode(response.StatusCode, response);
+        }
+        
+        [HttpPut("status")]
+        [Authorize(Roles = "ADMIN")]
+        [SwaggerOperation(Summary = "Update teacher status", Description = "Requires Admin role " +
+        "|| Active = 1 (Hoạt động); Inactive = 0 (Không hoạt động); OnLeave = 2 (Nghỉ phép); Retired = 3 (Đã nghỉ hưu)")]
+        public async Task<IActionResult> UpdateTeacherStatus([FromBody] UpdateTeacherStatusDto updateTeacherStatusDto)
+        {
+            var response = await _teacherService.UpdateTeacherStatus(User, updateTeacherStatusDto);
             return StatusCode(response.StatusCode, response);
         }
     }

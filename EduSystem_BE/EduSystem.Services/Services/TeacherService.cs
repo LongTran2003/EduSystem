@@ -167,5 +167,35 @@ namespace EduSystem.Services.Services
                 Message = StaticResponseMessage.Teacher.Found
             };
         }
+
+        public async Task<ResponseDto> UpdateTeacherStatus(ClaimsPrincipal user, UpdateTeacherStatusDto updateTeacherStatusDto)
+        {
+            if (user.FindFirstValue(ClaimTypes.Role) != StaticUserRoles.Admin)
+            {
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.User.NotAuthorized,
+                    statusCode: StaticOperationStatus.StatusCode.Forbidden);
+            }
+
+            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.TeacherId == updateTeacherStatusDto.TeacherId);
+            if (teacher is null)
+            {
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.Teacher.NotFound,
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+            }
+
+            teacher.Status = updateTeacherStatusDto.Status;
+
+            var saved = await _unitOfWork.SaveAsync();
+            return (saved == StaticOperationStatus.Database.Success)
+                ? SuccessResponse.Build(
+                    message: StaticResponseMessage.Teacher.Updated,
+                    statusCode: StaticOperationStatus.StatusCode.Ok,
+                    result: new { teacher.TeacherId, teacher.Status })
+                : ErrorResponse.Build(
+                    message: StaticResponseMessage.User.NotUpdated,
+                    statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+        }
     }
 }

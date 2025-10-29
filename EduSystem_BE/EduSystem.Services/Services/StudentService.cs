@@ -24,7 +24,7 @@ namespace EduSystem.Services.Services
 
         public async Task<ResponseDto> GetAllStudent
             (
-            ClaimsPrincipal User,
+            ClaimsPrincipal user,
             int pageNumber = 1,
             int pageSize = 10,
             string? filterOn = null,
@@ -34,7 +34,7 @@ namespace EduSystem.Services.Services
         {
             try
             {
-                var userRole = User.FindFirstValue(ClaimTypes.Role);
+                var userRole = user.FindFirstValue(ClaimTypes.Role);
                 bool isAdmin = userRole == StaticUserRoles.Admin;
 
                 var (students, totalStudents) = await _unitOfWork.Student
@@ -165,6 +165,36 @@ namespace EduSystem.Services.Services
                 StatusCode = StaticOperationStatus.StatusCode.Ok,
                 Message = StaticResponseMessage.Student.Found
             };
+        }
+
+        public async Task<ResponseDto> UpdateStudentStatus(ClaimsPrincipal user, UpdateStudentStatusDto updateStudentStatusDto)
+        {
+            if (user.FindFirstValue(ClaimTypes.Role) != StaticUserRoles.Admin)
+            {
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.User.NotAuthorized,
+                    statusCode: StaticOperationStatus.StatusCode.Forbidden);
+            }
+
+            var student = await _unitOfWork.Student.GetAsync(s => s.StudentId == updateStudentStatusDto.StudentId);
+            if (student is null)
+            {
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.Student.NotFound,
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+            }
+
+            student.Status = updateStudentStatusDto.Status;
+
+            var saved = await _unitOfWork.SaveAsync();
+            return (saved == StaticOperationStatus.Database.Success)
+                ? SuccessResponse.Build(
+                    message: StaticResponseMessage.Student.Updated,
+                    statusCode: StaticOperationStatus.StatusCode.Ok,
+                    result: new { student.StudentId, student.Status })
+                : ErrorResponse.Build(
+                    message: StaticResponseMessage.User.NotUpdated,
+                    statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
     }
 }

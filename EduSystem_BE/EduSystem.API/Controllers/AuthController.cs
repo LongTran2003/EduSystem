@@ -82,8 +82,8 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpPost("password/forgot")]
-        [SwaggerOperation(Summary = "API sends forgot available account's pasword email",
-        Description = "Requires customer's, staff's  account")]
+        [SwaggerOperation(Summary = "API sends forgot available account's password email",
+        Description = "Requires Student's, Teacher's  account")]
         public async Task<IActionResult> ForgotPassword([FromBody] EmailDto forgotPasswordDto)
         {
             var responseDto = await _authService.ForgotPassword(forgotPasswordDto);
@@ -91,8 +91,8 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpPost("password/reset")]
-        [SwaggerOperation(Summary = "API resets available account's pasword",
-            Description = "Requires customer's, staff's  account")]
+        [SwaggerOperation(Summary = "API resets available account's password",
+            Description = "Requires Student's, Teacher's  account")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             var responseDto = await _authService.ResetPassword(resetPasswordDto);
@@ -100,8 +100,8 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpPost("password/otp")]
-        [SwaggerOperation(Summary = "API sends OPT code to change account's pasword",
-            Description = "Requires customer's, staff's  account")]
+        [SwaggerOperation(Summary = "API sends OPT code to change account's password",
+            Description = "Requires Student's, Teacher's  account")]
         public async Task<IActionResult> SendOTP([FromBody] EmailDto emailDto)
         {
             var responseDto = await _authService.SendOTP(emailDto);
@@ -109,8 +109,8 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpPost("password/change")]
-        [SwaggerOperation(Summary = "API changes available account's pasword",
-            Description = "Requires customer's account")]
+        [SwaggerOperation(Summary = "API changes available account's password",
+            Description = "Requires Student's account")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
         {
             var responseDto = await _authService.ChangePassword(changePasswordDto, User);
@@ -119,7 +119,7 @@ namespace EduSystem.API.Controllers
 
         [HttpGet("user")]
         [SwaggerOperation(Summary = "API gets user info by user's token",
-            Description = "Requires customer's, staff's token")]
+            Description = "Requires Student's, Teacher's token")]
         public async Task<IActionResult> GetUserByToken()
         {
             var responseDto = await _authService.FetchUserByToken(User);
@@ -128,7 +128,7 @@ namespace EduSystem.API.Controllers
 
         [HttpPut("profile")]
         [SwaggerOperation(Summary = "API updates user profile",
-        Description = "Requires customer's, staff's  account")]
+        Description = "Requires Student's, Teacher's  account")]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileDto updateUserProfileDto)
         {
             var responseDto = await _authService.UpdateUserProfile(User, updateUserProfileDto);
@@ -137,7 +137,7 @@ namespace EduSystem.API.Controllers
 
         [HttpPost("refresh-token")]
         [SwaggerOperation(Summary = "API refreshes access token",
-        Description = "Requires customer's or staff's refresh token")]
+        Description = "Requires Student's or Teacher's refresh token")]
         public async Task<IActionResult> RefreshAccessToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
             var responseDto = await _authService.RefreshAccessToken(refreshTokenDto);

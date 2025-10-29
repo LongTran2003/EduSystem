@@ -1,5 +1,6 @@
 ﻿using EduSystem.Models.DTO;
 using System.Security.Claims;
+using EduSystem.Models.DTOs.Teacher;
 
 namespace EduSystem.Services.IServices
 {
@@ -16,5 +17,6 @@ namespace EduSystem.Services.IServices
             string? sortBy = null
             );
         Task<ResponseDto> GetTeacherInfoByPhoneNumber(ClaimsPrincipal user, string phoneNumber);
+        Task<ResponseDto> UpdateTeacherStatus(ClaimsPrincipal user, UpdateTeacherStatusDto updateTeacherStatusDto);
     }
 }
