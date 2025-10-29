@@ -51,10 +51,9 @@ public class LessonService : ILessonService
         var lesson = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == updateLessonDto.LessonId);
         if (lesson == null)
         {
-            return SuccessResponse.Build(
+            return ErrorResponse.Build(
                 message: StaticResponseMessage.Lesson.NotFound,
-                statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: null);
+                statusCode: StaticOperationStatus.StatusCode.Ok);
         }
         
         var updateLesson = _mapper.Map<UpdateLessonDto, Lesson>(updateLessonDto);

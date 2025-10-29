@@ -88,10 +88,9 @@ public class QuizService : IQuizService
         var quiz = await _unitOfWork.Quiz.GetAsync(s => s.QuizId == updateQuizDto.QuizId);
         if (quiz == null)
         {
-            return SuccessResponse.Build(
+            return ErrorResponse.Build(
                 message: StaticResponseMessage.Quiz.NotFound,
-                statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: null);
+                statusCode: StaticOperationStatus.StatusCode.Ok);
         }
         
         // Nếu Subject/Teacher có thay đổi -> validate tồn tại
@@ -119,12 +118,13 @@ public class QuizService : IQuizService
             quiz.TeacherId = updateQuizDto.TeacherId;
         }
         
+        // Map data 
         var updateQuiz = _mapper.Map<UpdateQuizDto, Quiz>(updateQuizDto);
         quiz.UpdatedBy = user.FindFirstValue("Fullname");
         quiz.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         quiz.Status = updateQuiz.Status;
         
-        // Update Subject
+        // Update Quiz
         _unitOfWork.Quiz.Update(quiz, updateQuiz);
 
         return (!await SaveChangesAsync()) ?

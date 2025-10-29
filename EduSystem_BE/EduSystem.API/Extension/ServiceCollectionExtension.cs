@@ -38,6 +38,7 @@ namespace EduSystem.API.Extension
             services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ILessonService, LessonService>();
             services.AddScoped<IQuizService, QuizService>();
+            services.AddScoped<IQuestionService, QuestionService>();
             
             
             return services;

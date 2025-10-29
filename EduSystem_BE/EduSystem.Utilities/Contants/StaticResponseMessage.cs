@@ -79,5 +79,19 @@
             public const string Deleted = "Quiz(zes) deleted successfully";
             public const string NotDeleted = "Quiz cannot delete";
         }
+        
+        public static class Question
+        {
+            public const string Created = "Question(s) created successfully";
+            public const string NotCreated = "Question(s) cannot create beacause: ";
+            public const string Updated = "Question(s) updated successfully";
+            public const string NotUpdated = "Question cannot update";
+            public const string NotFound = "Question not found";
+            public const string Found = "Question found";
+            public const string Retrieved = "Question information retrieved successfully";
+            public const string NotRetrieved = "Question information cannot retrieved";
+            public const string Deleted = "Question(s) deleted successfully";
+            public const string NotDeleted = "Question cannot delete";
+        }
     }
 }

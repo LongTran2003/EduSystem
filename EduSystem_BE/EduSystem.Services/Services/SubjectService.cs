@@ -51,10 +51,9 @@ public class SubjectService : ISubjectService
         var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == updateSubjectDto.SubjectId);
         if (subject == null)
         {
-            return SuccessResponse.Build(
+            return ErrorResponse.Build(
                 message: StaticResponseMessage.Subject.NotFound,
-                statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: null);
+                statusCode: StaticOperationStatus.StatusCode.Ok);
         }
         
         var updateSubject = _mapper.Map<UpdateSubjectDto, Subject>(updateSubjectDto);
