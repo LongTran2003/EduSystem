@@ -26,6 +26,24 @@ public class LessonService : ILessonService
     {
         try
         {
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return ErrorResponse.Build(
+                    message: "Unauthorized", 
+                    statusCode: StaticOperationStatus.StatusCode.Unauthorized);
+
+            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+            if (teacher is null)
+                return ErrorResponse.Build(
+                    message: "Teacher not found for current user", 
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+
+            var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == createLessonDto.SubjectId);
+            if (subject is null)
+                return ErrorResponse.Build(
+                    message: "Subject not found", 
+                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
+
             var lesson = _mapper.Map<CreateLessonDto, Lesson>(createLessonDto);
             lesson.CreatedBy = user.FindFirstValue("Fullname");
             lesson.CreatedTime = StaticOperationStatus.Timezone.Vietnam;

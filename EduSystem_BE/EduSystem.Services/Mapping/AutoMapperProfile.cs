@@ -111,6 +111,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
                 .ForMember(dest => dest.LessonType, opt => opt.MapFrom(src => src.LessonType))
                 .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
+                .ForMember(dest => dest.SubjectId, opt => opt.MapFrom(src => src.SubjectId))
                 .ReverseMap();
             
             CreateMap<Lesson, UpdateLessonDto>()
@@ -121,6 +122,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.DifficultyLevel, opt => opt.MapFrom(src => src.DifficultyLevel))
                 .ForMember(dest => dest.LessonType, opt => opt.MapFrom(src => src.LessonType))
                 .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
+                .ForMember(dest => dest.SubjectId, opt => opt.MapFrom(src => src.SubjectId))
                 .ReverseMap();
             
             // Quiz to QuizDto
