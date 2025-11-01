@@ -42,7 +42,6 @@ namespace EduSystem.DataAccess.Repositories
                     "phonenumber" => query.Where(t => t.ApplicationUser.PhoneNumber != null && t.ApplicationUser.PhoneNumber.Contains(filterQuery)),
                     "teachercode" => query.Where(t => t.TeacherCode.Contains(filterQuery)),
                     "specialization" => query.Where(t => t.Specialization != null && t.Specialization.Contains(filterQuery)),
-                    "teachingexperience" => query.Where(t => t.TeachingExperience != null && t.TeachingExperience.Contains(filterQuery)),
                     "status" => Enum.TryParse<TeacherStatus>(filterQuery, true, out var status)
                         ? query.Where(t => t.Status == status)
                         : query,
@@ -120,6 +119,18 @@ namespace EduSystem.DataAccess.Repositories
 
             int nextNumber = maxNumber + 1;
             return $"{prefix}{nextNumber:D4}";
+        }
+
+        public async Task<string> CalculateTeachingExperienceAsync(int initialYears)
+        {
+            // Tự động tăng 1 năm kinh nghiệm cho mỗi năm kể từ khi đăng ký
+            // Có thể thêm logic phức tạp hơn nếu cần
+            return initialYears switch
+            {
+                0 => "Less than a year",
+                1 => "1 year",
+                _ => $"{initialYears} years"
+            };
         }
     }
 }

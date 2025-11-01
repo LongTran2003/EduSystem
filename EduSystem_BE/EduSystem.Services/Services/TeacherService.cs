@@ -25,7 +25,7 @@ namespace EduSystem.Services.Services
 
         public async Task<ResponseDto> GetAllTeachers
             (
-            ClaimsPrincipal User,
+            ClaimsPrincipal user,
             int pageNumber = 1,
             int pageSize = 10,
             string? filterOn = null,
@@ -35,7 +35,7 @@ namespace EduSystem.Services.Services
         {
             try
             {
-                var userRole = User.FindFirstValue(ClaimTypes.Role);
+                var userRole = user.FindFirstValue(ClaimTypes.Role);
                 bool isAdmin = userRole == StaticUserRoles.Admin;
 
                 var (teachers, totalTeachers) = await _unitOfWork.Teacher
@@ -48,7 +48,7 @@ namespace EduSystem.Services.Services
                         isAdmin,
                         includeProperties: nameof(ApplicationUser)
                     );
-
+                
                 if (teachers == null || !teachers.Any() || totalTeachers == 0)
                 {
                     var emptyResult = new
@@ -68,7 +68,7 @@ namespace EduSystem.Services.Services
                         result: emptyResult);
                 }
                 
-                var teachersDto = _mapper.Map<IEnumerable<Models.Entities.Teacher>>(teachers);
+                var teachersDto = _mapper.Map<IEnumerable<GetTeacherDto>>(teachers);
 
                 var result = new
                 {

@@ -9,18 +9,13 @@ namespace EduSystem.Models.DTOs.Teacher
         public string TeacherEmail { get; set; } = null!;
         public DateTime? TeacherDOB { get; set; }
         public string? Gender { get; set; }
-        public string OfficePhone { get; set; } = null!;
         public string Address { get; set; } = null!;
-        public string? ImageUrl { get; set; } = null!;
+        public string? ImageUrl { get; set; }
         public TeacherStatus Status { get; set; }
         public string TeacherCode { get; set; } = null!;
-        public string? Department { get; set; }
         public string? Specialization { get; set; }
-        public string? Position { get; set; }
-        public DateTime? HireDate { get; set; }
-        public string? Degree { get; set; }
-        public string? Bio { get; set; }
-
+        public string? TeachingExperience { get; set; }
+        public decimal? Rating { get; set; }
 
 
     }

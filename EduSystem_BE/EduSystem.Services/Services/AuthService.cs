@@ -237,14 +237,18 @@ namespace EduSystem.Services.Services
                     Teacher teacher = new()
                         {
                             UserId = newUser.Id,
-                            TeacherCode = teacherCode
+                            TeacherCode = teacherCode,
+                            Specialization = signUpTeacherDto.Specialization,
+                            TeachingExperience = signUpTeacherDto.TeachingExperience,
+                            Rating = signUpTeacherDto.Rating,
+                            Status = Models.Enums.TeacherStatus.Active
                         };
 
                 var isRoleExist = await _roleManager.RoleExistsAsync(StaticUserRoles.Teacher);
 
                 if (!isRoleExist) await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.Teacher));
 
-                // Thêm role "Customer" cho người dùng
+                // Thêm role "Teacher" cho người dùng
                 var isRoleAdded = await _userManager.AddToRoleAsync(newUser, StaticUserRoles.Teacher);
 
                 if (!isRoleAdded.Succeeded)

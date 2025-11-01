@@ -15,5 +15,6 @@ namespace EduSystem.DataAccess.IRepositories
 
         void Update(Teacher teacher);
         Task<string> GetNextTeacherCodeAsync();
+        Task<string> CalculateTeachingExperienceAsync(int initialYears);
     }
 }

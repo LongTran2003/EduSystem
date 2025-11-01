@@ -37,5 +37,15 @@ namespace EduSystem.Models.DTO.Authentication
 
         [Required]
         public DateTime BirthDate { get; set; }
+
+        [StringLength(100)]
+        public string? Specialization { get; set; }
+
+        [StringLength(50)]
+        public int TeachingExperience { get; set; }
+
+        [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
+        [Column(TypeName = "decimal(3,2)")]
+        public decimal? Rating { get; set; }
     }
 }

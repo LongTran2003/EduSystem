@@ -9,7 +9,7 @@ namespace EduSystem.Services.IServices
         Task<ResponseDto> GetTeacherDetailsById(ClaimsPrincipal user, Guid teacherId);
         Task<ResponseDto> GetAllTeachers
             (
-            ClaimsPrincipal User,
+            ClaimsPrincipal user,
             int pageNumber = 1,
             int pageSize = 10,
             string? filterOn = null,

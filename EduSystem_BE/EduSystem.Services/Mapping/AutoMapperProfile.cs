@@ -39,7 +39,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => string.Empty))
                 .ForMember(dest => dest.LockoutEnabled, opt => opt.MapFrom(src => false))
-                .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => false));
+                .ForMember(dest => dest.EmailConfirmed, opt => opt.MapFrom(src => true));
 
             // Student to GetStudentDto
             CreateMap<Student, GetStudentDto>()
@@ -77,7 +77,9 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ApplicationUser.ImageUrl))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TeacherCode, opt => opt.MapFrom(src => src.TeacherCode))
-                .ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.Specialization));
+                .ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.Specialization))
+                .ForMember(dest => dest.TeachingExperience, opt => opt.MapFrom(src => src.TeachingExperience))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating));
 
             // Lesson to LessonDto
             CreateMap<Lesson, CreateLessonDto>()
