@@ -12,7 +12,7 @@ namespace EduSystem.DataAccess.Seed
             {
                 var adminRoleId = "8fa7c7bb-daa5-a660-bf02-82301a5eb32a";
 
-                var adminUserId = "Movok-Admin";
+                var adminUserId = "EduSystem-Admin";
 
                 var roles = new List<IdentityRole>
         {
