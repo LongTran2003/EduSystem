@@ -39,10 +39,9 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = filterOn switch
                 {
-                    "title" => query.Where(s => s.Title.Contains(filterQuery)),
-                    "gradelevel" => query.Where(s => s.GradeLevel != null && s.GradeLevel.Contains(filterQuery)),
-                    "difficultylevel" => query.Where(s =>
-                        s.DifficultyLevel != null && s.DifficultyLevel.Contains(filterQuery)),
+                    "quizname" => query.Where(s => s.QuizName.Contains(filterQuery)),
+                    "englishlevel" => query.Where(s => s.EnglishLevel != null && s.EnglishLevel.Contains(filterQuery)),
+                    "skill" => query.Where(s => s.Skill != null && s.Skill.Contains(filterQuery)),
                     "status" => query.Where(s => s.Status == StaticOperationStatus.BaseEntity.Active),
                     _ => query
                 };
@@ -55,9 +54,9 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = sortBy switch
                 {
-                    "title" => query.OrderBy(s => s.Title),
-                    "titledesc" => query.OrderByDescending(s => s.Title),
-                    "gradelevel" => query.OrderBy(s => s.GradeLevel),
+                    "quizname" => query.OrderBy(s => s.QuizName),
+                    "englishlevel" => query.OrderByDescending(s => s.EnglishLevel),
+                    "skill" => query.OrderBy(s => s.Skill),
                     "createdtime" => query.OrderByDescending(s => s.CreatedTime),
                     _ => query.OrderByDescending(s => s.CreatedTime)
                 };

@@ -2,7 +2,7 @@
 
 namespace EduSystem.DataAccess.IRepositories
 {
-    public interface IStudentQuizAttemptRepository : IRepository<StudentQuizAttempt>
+    public interface IQuizAttemptRepository : IRepository<QuizAttempt>
     {
     }
 }

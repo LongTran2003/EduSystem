@@ -4,12 +4,17 @@ namespace EduSystem.Models.DTO.Lesson;
 
 public class CreateLessonDto
 {
-    public Guid SubjectId { get; set; }
-    public string Title { get; set; } = null!;
-    public string? Description { get; set; }
-    public string? GradeLevel { get; set; }
-    public string? DifficultyLevel { get; set; }
-    public string? LessonType { get; set; }
-    public int? Duration  { get; set; }
-    
+    public Guid UnitId { get; set; }
+    [StringLength(200)]
+    public string LessonName { get; set; } = null!;
+
+    [StringLength(50)]
+    public string? Skill { get; set; } // Reading, Writing, Listening, Speaking
+
+    public string? Content { get; set; }
+
+    public int? Duration { get; set; } // Minutes
+
+    public int OrderIndex { get; set; } = 0; // Default value
+
 }   

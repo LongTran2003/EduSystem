@@ -7,15 +7,17 @@ namespace EduSystem.DataAccess.IRepositories
         IAnswerRepository Answer { get; }
         ILessonRepository Lesson { get; }
         ILessonContentRepository LessonContent { get; }
+        IMatrixRepository Matrix { get; }
+        IMatrixDetailRepository MatrixDetail { get; }
         IQuestionRepository Question { get; }
         IQuizRepository Quiz { get; }
+        IQuizAttemptRepository QuizAttempt { get; }
         IQuizQuestionRepository QuizQuestion { get; }
         IStudentRepository Student { get; }
         IStudentAnswerRepository StudentAnswer { get; }
-        IStudentQuizAttemptRepository StudentQuizAttempt { get; }
         IStudentProgressRepository StudentProgress { get; }
-        ISubjectRepository Subject { get; }
         ITeacherRepository Teacher { get; }
+        IUnitRepository Unit { get; }
         
         
         

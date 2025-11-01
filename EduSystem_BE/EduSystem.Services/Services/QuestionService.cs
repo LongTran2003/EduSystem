@@ -48,15 +48,6 @@ public class QuestionService : IQuestionService
                     statusCode: StaticOperationStatus.StatusCode.BadRequest);
             }
 
-            // Validate FK: Subject
-            var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == createQuestionDto.SubjectId);
-            if (subject == null)
-            {
-                return ErrorResponse.Build(
-                    message: "Subject not found",
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-
             // Validate FK: Teacher
             var teacher = await _unitOfWork.Teacher.GetAsync(t => t.TeacherId == createQuestionDto.TeacherId);
             if (teacher == null)
@@ -66,20 +57,9 @@ public class QuestionService : IQuestionService
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
             }
 
-            // Validate FK: Lesson
-            var lesson = await _unitOfWork.Lesson.GetAsync(t => t.TeacherId == createQuestionDto.TeacherId);
-            if (lesson == null)
-            {
-                return ErrorResponse.Build(
-                    message: "Lesson not found",
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-
             // Map data
             var question = _mapper.Map<CreateQuestionDto, Question>(createQuestionDto);
-            question.SubjectId = createQuestionDto.SubjectId;
             question.TeacherId = createQuestionDto.TeacherId;
-            question.LessonId = createQuestionDto.LessonId;
             question.Status = StaticOperationStatus.BaseEntity.Active;
             question.CreatedBy = user.FindFirstValue("Fullname");
             question.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
@@ -111,17 +91,6 @@ public class QuestionService : IQuestionService
         }
         
         // Nếu Subject/Teacher/Lesson có thay đổi -> validate tồn tại
-        if (updateQuestionDto.SubjectId != Guid.Empty && updateQuestionDto.SubjectId != question.SubjectId)
-        {
-            var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == updateQuestionDto.SubjectId);
-            if (subject == null)
-            {
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Subject.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-            question.SubjectId = updateQuestionDto.SubjectId;
-        }
         
         if (updateQuestionDto.TeacherId != Guid.Empty && updateQuestionDto.TeacherId != question.TeacherId)
         {
@@ -133,18 +102,6 @@ public class QuestionService : IQuestionService
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
             }
             question.TeacherId = updateQuestionDto.TeacherId;
-        }
-        
-        if (updateQuestionDto.LessonId != Guid.Empty && updateQuestionDto.LessonId != question.LessonId)
-        {
-            var lesson = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == updateQuestionDto.LessonId);
-            if (lesson == null)
-            {
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Lesson.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-            question.LessonId = updateQuestionDto.LessonId;
         }
         
         // Map data

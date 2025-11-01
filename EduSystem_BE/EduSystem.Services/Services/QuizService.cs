@@ -41,15 +41,6 @@ public class QuizService : IQuizService
                     statusCode: StaticOperationStatus.StatusCode.BadRequest);
             }
 
-            // Validate FK: Subject
-            var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == createQuizDto.SubjectId);
-            if (subject == null)
-            {
-                return ErrorResponse.Build(
-                    message: "Subject not found",
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-
             // Validate FK: Teacher
             var teacher = await _unitOfWork.Teacher.GetAsync(t => t.TeacherId == createQuizDto.TeacherId);
             if (teacher == null)
@@ -61,7 +52,6 @@ public class QuizService : IQuizService
             
             // Map data
             var quiz = _mapper.Map<CreateQuizDto, Quiz>(createQuizDto);
-            quiz.SubjectId = createQuizDto.SubjectId;
             quiz.TeacherId = createQuizDto.TeacherId;
             quiz.Status = StaticOperationStatus.BaseEntity.Active;
             quiz.CreatedBy = user.FindFirstValue("Fullname");
@@ -94,17 +84,6 @@ public class QuizService : IQuizService
         }
         
         // Nếu Subject/Teacher có thay đổi -> validate tồn tại
-        if (updateQuizDto.SubjectId != Guid.Empty && updateQuizDto.SubjectId != quiz.SubjectId)
-        {
-            var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == updateQuizDto.SubjectId);
-            if (subject == null)
-            {
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Subject.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-            quiz.SubjectId = updateQuizDto.SubjectId;
-        }
 
         if (updateQuizDto.TeacherId != Guid.Empty && updateQuizDto.TeacherId != quiz.TeacherId)
         {

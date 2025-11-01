@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using EduSystem.Models.DTO;
 using EduSystem.Models.DTO.Lesson;
-using EduSystem.Models.DTO.Subject;
-using EduSystem.Models.Entities;
 
 namespace EduSystem.Services.IServices;
 

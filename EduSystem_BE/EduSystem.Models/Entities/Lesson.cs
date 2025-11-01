@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduSystem.Utilities.Contants;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduSystem.Models.Entities
@@ -9,34 +10,26 @@ namespace EduSystem.Models.Entities
         public Guid LessonId { get; set; }
 
         [StringLength(200)]
-        public string Title { get; set; } = null!; // Tiêu đề bài học
+        public Guid UnitId { get; set; }
+        [ForeignKey("UnitId")]
+        public virtual Unit Unit { get; set; } = null!;
 
-        [StringLength(1000)]
-        public string? Description { get; set; } // Mô tả bài học
-
-        [StringLength(20)]
-        public string? GradeLevel { get; set; } // Cấp học: Grade 10, Grade 11, Grade 12
-
-        [StringLength(20)]
-        public string? DifficultyLevel { get; set; } // Mức độ khó: Beginner, Intermediate, Advanced
+        [StringLength(200)]
+        public string LessonName { get; set; } = null!;
 
         [StringLength(50)]
-        public string? LessonType { get; set; } // Loại bài học: Grammar, Vocabulary, Reading, Listening, Speaking, Writing
+        public string? Skill { get; set; } // Reading, Writing, Listening, Speaking
 
-        public int? Duration { get; set; } // Thời lượng bài học (phút)
+        public string? Content { get; set; }
 
-        // Foreign Keys
-        public Guid SubjectId { get; set; }
-        [ForeignKey("SubjectId")]
-        public virtual Subject Subject { get; set; } = null!;
+        public int? Duration { get; set; } // Minutes
 
-        public Guid TeacherId { get; set; }
-        [ForeignKey("TeacherId")]
-        public virtual Teacher Teacher { get; set; } = null!;
+        public int OrderIndex { get; set; } // Thứ tự của bài học (Bài 1, Bài 2)
+
+        public string Status { get; set; } = StaticOperationStatus.BaseEntity.Active;
 
         // Navigation properties
         public virtual ICollection<LessonContent> LessonContents { get; set; } = new List<LessonContent>();
-        public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
         public virtual ICollection<StudentProgress> StudentProgresses { get; set; } = new List<StudentProgress>();
     }
 }

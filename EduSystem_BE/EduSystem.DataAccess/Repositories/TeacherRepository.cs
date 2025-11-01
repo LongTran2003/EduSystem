@@ -38,13 +38,11 @@ namespace EduSystem.DataAccess.Repositories
                 query = filterOn.ToLower() switch
                 {
                     "fullname" => query.Where(t => t.ApplicationUser.FullName.Contains(filterQuery)),
-                    "email" => query.Where(t => t.ApplicationUser.Email.Contains(filterQuery)),
-                    "phonenumber" => query.Where(t => t.ApplicationUser.PhoneNumber.Contains(filterQuery)),
+                    "email" => query.Where(t => t.ApplicationUser.Email != null && t.ApplicationUser.Email.Contains(filterQuery)),
+                    "phonenumber" => query.Where(t => t.ApplicationUser.PhoneNumber != null && t.ApplicationUser.PhoneNumber.Contains(filterQuery)),
                     "teachercode" => query.Where(t => t.TeacherCode.Contains(filterQuery)),
-                    "department" => query.Where(t => t.Department != null && t.Department.Contains(filterQuery)),
                     "specialization" => query.Where(t => t.Specialization != null && t.Specialization.Contains(filterQuery)),
-                    "position" => query.Where(t => t.Position != null && t.Position.Contains(filterQuery)),
-                    "degree" => query.Where(t => t.Degree != null && t.Degree.Contains(filterQuery)),
+                    "teachingexperience" => query.Where(t => t.TeachingExperience != null && t.TeachingExperience.Contains(filterQuery)),
                     "status" => Enum.TryParse<TeacherStatus>(filterQuery, true, out var status)
                         ? query.Where(t => t.Status == status)
                         : query,
@@ -73,14 +71,12 @@ namespace EduSystem.DataAccess.Repositories
                 "email_desc" => query.OrderByDescending(t => t.ApplicationUser.Email),
                 "teachercode" => query.OrderBy(t => t.TeacherCode),
                 "teachercode_desc" => query.OrderByDescending(t => t.TeacherCode),
-                "hiredate" => query.OrderBy(t => t.HireDate),
-                "hiredate_desc" => query.OrderByDescending(t => t.HireDate),
                 "status" => query.OrderBy(t => t.Status),
                 "status_desc" => query.OrderByDescending(t => t.Status),
-                "department" => query.OrderBy(t => t.Department),
-                "department_desc" => query.OrderByDescending(t => t.Department),
                 "specialization" => query.OrderBy(t => t.Specialization),
                 "specialization_desc" => query.OrderByDescending(t => t.Specialization),
+                "teachingexperience" => query.OrderBy(t => t.TeachingExperience),
+                "teachingexperience_desc" => query.OrderByDescending(t => t.TeachingExperience),
                 _ => query.OrderBy(t => t.ApplicationUser.FullName)
             };
 

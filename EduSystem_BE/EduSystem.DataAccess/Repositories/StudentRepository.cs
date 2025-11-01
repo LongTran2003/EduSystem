@@ -40,10 +40,9 @@ namespace EduSystem.DataAccess.Repositories
                 query = filterOn.ToLower() switch
                 {
                     "fullname" => query.Where(s => s.ApplicationUser.FullName.Contains(filterQuery)),
-                    "email" => query.Where(s => s.ApplicationUser.Email.Contains(filterQuery)),
-                    "phonenumber" => query.Where(s => s.ApplicationUser.PhoneNumber.Contains(filterQuery)),
+                    "email" => query.Where(s => s.ApplicationUser.Email != null && s.ApplicationUser.Email.Contains(filterQuery)),
+                    "phonenumber" => query.Where(s => s.ApplicationUser.PhoneNumber != null && s.ApplicationUser.PhoneNumber.Contains(filterQuery)),
                     "studentcode" => query.Where(s => s.StudentCode.Contains(filterQuery)),
-                    "class" => query.Where(s => s.Class != null && s.Class.Contains(filterQuery)),
                     "grade" => query.Where(s => s.Grade != null && s.Grade.Contains(filterQuery)),
                     "school" => query.Where(s => s.School != null && s.School.Contains(filterQuery)),
                     "status" => Enum.TryParse<StudentStatus>(filterQuery, true, out var status)
@@ -74,12 +73,10 @@ namespace EduSystem.DataAccess.Repositories
                 "email_desc" => query.OrderByDescending(s => s.ApplicationUser.Email),
                 "studentcode" => query.OrderBy(s => s.StudentCode),
                 "studentcode_desc" => query.OrderByDescending(s => s.StudentCode),
-                "enrollmentdate" => query.OrderBy(s => s.EnrollmentDate),
-                "enrollmentdate_desc" => query.OrderByDescending(s => s.EnrollmentDate),
+                "grade" => query.OrderBy(s => s.Grade),
+                "school" => query.OrderBy(s => s.School),
                 "status" => query.OrderBy(s => s.Status),
                 "status_desc" => query.OrderByDescending(s => s.Status),
-                "class" => query.OrderBy(s => s.Class),
-                "class_desc" => query.OrderByDescending(s => s.Class),
                 _ => query.OrderBy(s => s.ApplicationUser.FullName)
             };
 

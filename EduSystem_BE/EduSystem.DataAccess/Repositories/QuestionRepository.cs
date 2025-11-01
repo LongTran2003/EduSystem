@@ -39,11 +39,12 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = filterOn switch
                 {
-                    "questiontext" => query.Where(s => s.QuestionText.Contains(filterQuery)),
-                    "questiontype" => query.Where(s => s.QuestionType.Contains(filterQuery)),
-                    "gradelevel" => query.Where(s => s.GradeLevel != null && s.GradeLevel.Contains(filterQuery)),
-                    "difficultylevel" => query.Where(s =>
-                        s.DifficultyLevel != null && s.DifficultyLevel.Contains(filterQuery)),
+                    "content" => query.Where(s => s.Content.Contains(filterQuery)),
+                    "questiontype" => query.Where(s => s.QuestionType != null && s.QuestionType.Contains(filterQuery)),
+                    "level" => query.Where(s => s.Level != null && s.Level.Contains(filterQuery)),
+                    "skilltype" => query.Where(s => s.SkillType != null && s.SkillType.Contains(filterQuery)),
+                    "englishlevel" => query.Where(s =>
+                        s.EnglishLevel != null && s.EnglishLevel.Contains(filterQuery)),
                     "status" => query.Where(s => s.Status == StaticOperationStatus.BaseEntity.Active),
                     _ => query
                 };
@@ -56,8 +57,12 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = sortBy switch
                 {
-                    "questiontext" => query.OrderBy(q => q.QuestionText),
-                    "questiontextdesc" => query.OrderByDescending(q => q.QuestionText),
+                    "content" => query.OrderBy(q => q.Content),
+                    "contentdesc" => query.OrderByDescending(q => q.Content),
+                    "questiontype" => query.OrderBy(q => q.QuestionType),
+                    "level" => query.OrderBy(q => q.Level),
+                    "skilltype" => query.OrderBy(q => q.SkillType),
+                    "englishlevel" => query.OrderBy(q => q.EnglishLevel),
                     "createdtime" => query.OrderByDescending(q => q.CreatedTime),
                     _ => query.OrderByDescending(q => q.CreatedTime)
                 };

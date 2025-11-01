@@ -29,20 +29,34 @@ public class LessonService : ILessonService
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
                 return ErrorResponse.Build(
-                    message: "Unauthorized", 
+                    message: "Unauthorized",
                     statusCode: StaticOperationStatus.StatusCode.Unauthorized);
 
             var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
             if (teacher is null)
                 return ErrorResponse.Build(
-                    message: "Teacher not found for current user", 
+                    message: "Teacher not found for current user",
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
 
-            var subject = await _unitOfWork.Subject.GetAsync(s => s.SubjectId == createLessonDto.SubjectId);
-            if (subject is null)
+            // Validate UnitId exists
+            var unit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == createLessonDto.UnitId);
+            if (unit == null)
+            {
                 return ErrorResponse.Build(
-                    message: "Subject not found", 
-                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
+                    message: "Unit not found",
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+            }
+
+            // Get max OrderIndex for this unit and set next order
+            if (createLessonDto.OrderIndex <= 0)
+            {
+                var existingLessons = await _unitOfWork.Lesson.GetAllAsync(
+                    l => l.UnitId == createLessonDto.UnitId);
+                var maxOrderIndex = existingLessons.Any()
+                    ? existingLessons.Max(l => l.OrderIndex)
+                    : 0;
+                createLessonDto.OrderIndex = maxOrderIndex + 1;
+            }
 
             var lesson = _mapper.Map<CreateLessonDto, Lesson>(createLessonDto);
             lesson.CreatedBy = user.FindFirstValue("Fullname");

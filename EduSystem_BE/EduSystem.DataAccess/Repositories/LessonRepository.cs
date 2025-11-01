@@ -41,11 +41,9 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = filterOn switch
                 {
-                    "title" => query.Where(s => s.Title.Contains(filterQuery)),
-                    "gradelevel" => query.Where(s => s.GradeLevel != null && s.GradeLevel.Contains(filterQuery)),
-                    "lessontype" => query.Where(s => s.LessonType != null && s.LessonType.Contains(filterQuery)),
-                    "difficultylevel" => query.Where(s =>
-                        s.DifficultyLevel != null && s.DifficultyLevel.Contains(filterQuery)),
+                    "lessonname" => query.Where(s => s.LessonName.Contains(filterQuery)),
+                    "skill" => query.Where(s => s.Skill != null && s.Skill.Contains(filterQuery)),
+                    "content" => query.Where(s => s.Content != null && s.Content.Contains(filterQuery)),
                     "status" => query.Where(s => s.Status == StaticOperationStatus.BaseEntity.Active),
                     _ => query
                 };
@@ -58,17 +56,19 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = sortBy switch
                 {
-                    "title" => query.OrderBy(s => s.Title),
-                    "titledesc" => query.OrderByDescending(s => s.Title),
-                    "lessontype" => query.OrderBy(s => s.LessonType),
-                    "gradelevel" => query.OrderBy(s => s.GradeLevel),
+                    "lessonname" => query.OrderBy(s => s.LessonName),
+                    "lessonnamedesc" => query.OrderByDescending(s => s.LessonName),
+                    "skill" => query.OrderBy(s => s.Skill),
+                    "content" => query.OrderBy(s => s.Content),
+                    "orderindex" => query.OrderBy(s => s.OrderIndex),
+                    "orderindexdesc" => query.OrderByDescending(s => s.OrderIndex),
                     "createdtime" => query.OrderByDescending(s => s.CreatedTime),
                     _ => query.OrderByDescending(s => s.CreatedTime)
                 };
             }
             else
             {
-                query = query.OrderByDescending(s => s.CreatedTime);
+                query = query.OrderByDescending(s => s.OrderIndex).ThenByDescending(s => s.CreatedTime); ;
             }
 
             // Include navigation properties if specified

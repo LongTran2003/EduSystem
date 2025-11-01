@@ -4,10 +4,11 @@ using EduSystem.Models.Entities;
 
 namespace EduSystem.DataAccess.Repositories
 {
-    public class StudentQuizAttemptRepository : Repository<StudentQuizAttempt>, IStudentQuizAttemptRepository
+    public class QuizAttemptRepository : Repository<QuizAttempt>, IQuizAttemptRepository
     {
         private readonly ApplicationDBContext _context;
-        public StudentQuizAttemptRepository(ApplicationDBContext context) : base(context)
+
+        public QuizAttemptRepository(ApplicationDBContext context) : base(context)
         {
             _context = context;
         }

@@ -17,17 +17,11 @@ namespace EduSystem.Models.Entities
 
         public StudentStatus Status { get; set; } = StudentStatus.Active;
 
-        [StringLength(50)]
-        public string? Class { get; set; } // lớp học, ví dụ: 10A1, 11B2, v.v.
-
         [StringLength(100)]
         public string? Grade { get; set; } // Khối lớp, ví dụ: Khối 10, Khối 11, v.v.
 
         [StringLength(100)]
-        public string? School { get; set; } // Khoa, ví dụ: Khoa Khoa học Tự nhiên, Khoa Xã hội Nhân văn, v.v.
+        public string? School { get; set; } // Trường học
 
-        public DateTime? EnrollmentDate { get; set; } // Ngày nhập học
-
-        public DateTime? GraduationDate { get; set; } // Ngày tốt nghiệp dự kiến
     }
 }

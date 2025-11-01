@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EduSystem.Utilities.Contants;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduSystem.Models.Entities
@@ -8,43 +9,34 @@ namespace EduSystem.Models.Entities
         [Key]
         public Guid QuizId { get; set; }
 
-        [StringLength(200)]
-        public string Title { get; set; } = null!; // Tiêu đề bài kiểm tra
-
-        [StringLength(500)]
-        public string? Description { get; set; } // Mô tả bài kiểm tra
-
-        [StringLength(20)]
-        public string? GradeLevel { get; set; } // Cấp học: Grade 10, Grade 11, Grade 12
-
-        [StringLength(20)]
-        public string? DifficultyLevel { get; set; } // Mức độ khó: Easy, Medium, Hard
-
-        public int? TimeLimit { get; set; } // Thời gian làm bài (phút)
-
-        public int? TotalQuestions { get; set; } // Tổng số câu hỏi
-
-        public int? TotalPoints { get; set; } // Tổng điểm
-
-        public bool IsPublished { get; set; } = false; // Trạng thái xuất bản
-
-        public DateTime? StartDate { get; set; } // Ngày bắt đầu
-
-        public DateTime? EndDate { get; set; } // Ngày kết thúc
-
-        public int? MaxAttempts { get; set; } = 1; // Số lần thử tối đa
-
-        // Foreign Keys
-        public Guid SubjectId { get; set; }
-        [ForeignKey("SubjectId")]
-        public virtual Subject Subject { get; set; } = null!;
+        public Guid MatrixId { get; set; }
+        [ForeignKey("MatrixId")]
+        public virtual Matrix Matrix { get; set; } = null!;
 
         public Guid TeacherId { get; set; }
         [ForeignKey("TeacherId")]
         public virtual Teacher Teacher { get; set; } = null!;
 
+        [StringLength(200)]
+        public string QuizName { get; set; } = null!;
+
+        [StringLength(20)]
+        public string? EnglishLevel { get; set; }
+
+        [StringLength(50)]
+        public string? Skill { get; set; }
+
+        public string? Description { get; set; }
+
+        public int Duration { get; set; } // Minutes
+
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal PassingScore { get; set; }
+
+        public string Status { get; set; } = StaticOperationStatus.BaseEntity.Active;
+
         // Navigation properties
         public virtual ICollection<QuizQuestion> QuizQuestions { get; set; } = new List<QuizQuestion>();
-        public virtual ICollection<StudentQuizAttempt> StudentQuizAttempts { get; set; } = new List<StudentQuizAttempt>();
+        public virtual ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
     }
 }
