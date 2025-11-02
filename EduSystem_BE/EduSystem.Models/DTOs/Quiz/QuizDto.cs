@@ -1,11 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+﻿namespace EduSystem.Models.DTO.Quiz;
 
-namespace EduSystem.Models.DTO.Quiz;
-
-public class CreateQuizDto
+public class QuizDto
 {
-    public Guid MatrixId { get; set; } // Thêm MatrixId
-    public string QuizName { get; set; } = null!;
+    public Guid QuizId { get; set; }
+    public string? TeacherName  { get; set; }
+    public string? QuizName { get; set; } = null!;
     public string? EnglishLevel { get; set; }
     public string? Skill { get; set; }
     public string? Description { get; set; }

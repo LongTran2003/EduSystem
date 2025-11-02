@@ -38,7 +38,7 @@ public class QuizController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpGet]
+    [HttpGet("get/all")]
     [SwaggerOperation(Summary = "Get all quizzes", Description = "Requires authentication")]
     public async Task<IActionResult> GetAllQuizzes(
         [FromQuery] int pageNumber = 1,
@@ -51,8 +51,16 @@ public class QuizController : ControllerBase
             User, pageNumber, pageSize, filterOn, filterQuery, sortBy);
         return StatusCode(response.StatusCode, response);
     }
+
+    [HttpGet("get/{quizId:guid}")]
+    [SwaggerOperation(Summary = "Get quiz detail", Description = "Requires authentication")]
+    public async Task<IActionResult> GetQuizDetail(Guid quizId)
+    {
+        var response = await _quizService.GetQuizById(User, quizId);
+        return StatusCode(response.StatusCode, response);
+    }
     
-    [HttpPut]
+    [HttpPut("update")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Update quiz", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateQuiz([FromBody] UpdateQuizDto updateQuizDto)

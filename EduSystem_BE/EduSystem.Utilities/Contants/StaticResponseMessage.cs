@@ -72,6 +72,7 @@
         {
             public const string Created = "Quiz(zes) created successfully";
             public const string NotCreated = "Quiz(zes) cannot create beacause: ";
+            public const string AlreadyExist = "Quiz already exist: ";
             public const string Updated = "Quiz(zes) updated successfully";
             public const string NotUpdated = "Quiz cannot update";
             public const string NotFound = "Quiz not found";

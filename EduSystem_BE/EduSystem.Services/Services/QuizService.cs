@@ -25,45 +25,59 @@ public class QuizService : IQuizService
 
     public async Task<ResponseDto> CreateQuiz(ClaimsPrincipal user, CreateQuizDto createQuizDto)
     {
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.User.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        // Lấy TeacherId từ người dùng hiện tại
+        var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (teacher == null)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.Teacher.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        // Kiểm tra Matrix có tồn tại không
+        var matrix = await _unitOfWork.Matrix.GetAsync(m => m.MatrixId == createQuizDto.MatrixId);
+        if (matrix == null)
+        {
+            return ErrorResponse.Build(
+                message: "Matrix not found. Please create a matrix first.",
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        // Map dữ liệu qua Dto và gán TeacherId từ người dùng hiện tại
+        var createQuiz = _mapper.Map<CreateQuizDto, Quiz>(createQuizDto);
+        createQuiz.TeacherId = teacher.TeacherId;
+        
+        // Check xem QuizName đã tồn tại với gvien đó chưa
+        var existingUnit = await _unitOfWork.Quiz.GetAsync(u =>
+                u.TeacherId == createQuiz.TeacherId &&
+                u.QuizName == createQuiz.QuizName
+        );
+
+        if (existingUnit != null)
+        {
+            // Nếu tìm thấy, tức là đã tồn tại -> Trả về lỗi
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.Quiz.AlreadyExist,
+                statusCode: StaticOperationStatus.StatusCode.Conflict); // 409 Conflict là mã lỗi phù hợp
+        }
+        
+        // Cập nhật lại dữ liệu BaseEntity
+        createQuiz.CreatedBy = user.FindFirstValue("FullName");
+        createQuiz.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
+        createQuiz.Status = StaticOperationStatus.BaseEntity.Active;
+        
         try
         {
-            if (createQuizDto.SubjectId == Guid.Empty)
-            {
-                return ErrorResponse.Build(
-                    message: "SubjectId is required",
-                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
-            }
-
-            if (createQuizDto.TeacherId == Guid.Empty)
-            {
-                return ErrorResponse.Build(
-                    message: "TeacherId is required",
-                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
-            }
-
-            // Validate FK: Teacher
-            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.TeacherId == createQuizDto.TeacherId);
-            if (teacher == null)
-            {
-                return ErrorResponse.Build(
-                    message: "Teacher not found",
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-            
-            // Map data
-            var quiz = _mapper.Map<CreateQuizDto, Quiz>(createQuizDto);
-            quiz.TeacherId = createQuizDto.TeacherId;
-            quiz.Status = StaticOperationStatus.BaseEntity.Active;
-            quiz.CreatedBy = user.FindFirstValue("Fullname");
-            quiz.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
-
-            await _unitOfWork.Quiz.AddAsync(quiz);
+            await _unitOfWork.Quiz.AddAsync(createQuiz);
             await _unitOfWork.SaveAsync();
-
-            return SuccessResponse.Build(
-                message: StaticResponseMessage.Quiz.Created,
-                statusCode: StaticOperationStatus.StatusCode.Created,
-                result: quiz);
         }
         catch (Exception ex)
         {
@@ -71,50 +85,73 @@ public class QuizService : IQuizService
                 message: StaticResponseMessage.Quiz.NotCreated + ex.Message,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
+        
+        var resultDto = _mapper.Map<QuizDto>(createQuiz);
+        
+        return SuccessResponse.Build(
+            message: StaticResponseMessage.Unit.Created,
+            statusCode: StaticOperationStatus.StatusCode.Ok,
+            result: resultDto);
     }
 
     public async Task<ResponseDto> UpdateQuiz(ClaimsPrincipal user, UpdateQuizDto updateQuizDto)
     {
-        var quiz = await _unitOfWork.Quiz.GetAsync(s => s.QuizId == updateQuizDto.QuizId);
-        if (quiz == null)
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.User.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+
+        var userTeacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (userTeacher is null)
+        {
+            return ErrorResponse.Build(
+                message: "User is not a valid teacher.",
+                statusCode: StaticOperationStatus.StatusCode.Forbidden); // 403 Forbidden
+        }
+        
+        // Kiểm tra Matrix có tồn tại không
+        var matrix = await _unitOfWork.Matrix.GetAsync(m => m.MatrixId == updateQuizDto.MatrixId);
+        if (matrix == null)
+        {
+            return ErrorResponse.Build(
+                message: "Matrix not found. Please select a valid matrix.",
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        var updateQuiz = await _unitOfWork.Quiz.GetAsync(u => u.QuizId == updateQuizDto.QuizId,
+            includeProperties: "Teacher.ApplicationUser");
+        if (updateQuiz is null)
         {
             return ErrorResponse.Build(
                 message: StaticResponseMessage.Quiz.NotFound,
-                statusCode: StaticOperationStatus.StatusCode.Ok);
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
-        
-        // Nếu Subject/Teacher có thay đổi -> validate tồn tại
 
-        if (updateQuizDto.TeacherId != Guid.Empty && updateQuizDto.TeacherId != quiz.TeacherId)
-        {
-            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.TeacherId == updateQuizDto.TeacherId);
-            if (teacher == null)
-            {
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Teacher.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-            quiz.TeacherId = updateQuizDto.TeacherId;
-        }
+        // Preserve the TeacherId from the existing unit
+        var updatedQuiz = _mapper.Map<UpdateQuizDto, Quiz>(updateQuizDto);
+        updatedQuiz.TeacherId = updateQuiz.TeacherId; // Keep the original TeacherId
+        updatedQuiz.Status = StaticOperationStatus.BaseEntity.Active;
+        updatedQuiz.CreatedBy = updateQuiz.CreatedBy;
+        updatedQuiz.CreatedTime = updateQuiz.CreatedTime;
+        updatedQuiz.UpdatedBy = user.FindFirstValue("FullName");
+        updatedQuiz.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         
-        // Map data 
-        var updateQuiz = _mapper.Map<UpdateQuizDto, Quiz>(updateQuizDto);
-        quiz.UpdatedBy = user.FindFirstValue("Fullname");
-        quiz.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
-        quiz.Status = updateQuiz.Status;
+        _unitOfWork.Quiz.Update(updateQuiz, updatedQuiz);
         
-        // Update Quiz
-        _unitOfWork.Quiz.Update(quiz, updateQuiz);
-
-        return (!await SaveChangesAsync()) ?
-            ErrorResponse.Build(
-                message: StaticResponseMessage.Quiz.NotUpdated,
-                statusCode: StaticOperationStatus.StatusCode.InternalServerError)
-            :
+        var resultDto =  _mapper.Map<QuizDto>(updateQuiz);
+        
+        return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Quiz.Updated,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: updateQuiz);
+                result: resultDto)
+            :
+            ErrorResponse.Build(
+                message: StaticResponseMessage.Quiz.NotUpdated,
+                statusCode: StaticOperationStatus.StatusCode.InternalServerError);
     }
 
     public async Task<ResponseDto> GetAllQuizzes
@@ -155,7 +192,7 @@ public class QuizService : IQuizService
                     result: emptyResult);
             }
             
-            var quizzesDto = _mapper.Map<IEnumerable<Quiz>>(quizzes);
+            var quizzesDto = _mapper.Map<IEnumerable<QuizDto>>(quizzes);
 
             var result = new
             {
@@ -192,6 +229,9 @@ public class QuizService : IQuizService
         
         var getQuizById = await _unitOfWork.Quiz.GetAsync(s => s.QuizId == quizId 
                                                                    && s.Status != StaticOperationStatus.BaseEntity.Deleted);
+        
+        var resultUnitDto = _mapper.Map<QuizDto>(getQuizById); 
+        
         return (getQuizById is null) ?
             ErrorResponse.Build(
                 message: StaticResponseMessage.Quiz.NotFound,
@@ -200,7 +240,7 @@ public class QuizService : IQuizService
             SuccessResponse.Build(
                 message: StaticResponseMessage.Quiz.Found,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: getQuizById);
+                result: resultUnitDto);
     }
 
     public async Task<ResponseDto> DeleteQuiz(ClaimsPrincipal user, Guid quizId)
@@ -225,11 +265,13 @@ public class QuizService : IQuizService
         deleteQuiz.UpdatedBy = user.FindFirstValue("Fullname");
         deleteQuiz.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         
+        var resultDto = _mapper.Map<QuizDto>(deleteQuiz);
+        
         return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Quiz.Deleted,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: deleteQuiz)
+                result: resultDto)
             :
             ErrorResponse.Build(
                 message: StaticResponseMessage.Quiz.NotDeleted,
