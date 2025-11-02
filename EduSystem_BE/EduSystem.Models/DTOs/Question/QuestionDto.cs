@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
+﻿namespace EduSystem.Models.DTO.Question;
 
-namespace EduSystem.Models.DTO.Question;
-
-public class CreateQuestionDto
+public class QuestionDto
 {
+    public Guid QuestionId { get; set; }
+    public string TeacherName { get; set; }
     public string Content { get; set; }
     public string? QuestionType { get; set; }
     public string? Level { get; set; }

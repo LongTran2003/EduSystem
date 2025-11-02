@@ -53,7 +53,7 @@ public class UnitController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/{unitId}")]
+    [HttpGet("get/{unitId:guid}")]
     [SwaggerOperation(Summary = "Get a unit's detail", Description = "Requires authentication")]
     public async Task<IActionResult> GetUnitDetailsById(Guid unitId)
     {

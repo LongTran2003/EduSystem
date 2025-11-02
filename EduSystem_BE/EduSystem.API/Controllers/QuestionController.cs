@@ -39,7 +39,7 @@ public class QuestionController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpGet]
+    [HttpGet("get/all")]
     [SwaggerOperation(Summary = "Get all questions", Description = "Requires authentication")]
     public async Task<IActionResult> GetAllQuestions(
         [FromQuery] int pageNumber = 1,
@@ -53,7 +53,15 @@ public class QuestionController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpPut]
+    [HttpGet("get/{questionId:guid}")]
+    [SwaggerOperation(Summary = "Get a question's detail", Description = "Requires authentication")]
+    public async Task<IActionResult> GetQuestionById(Guid questionId)
+    {
+        var response = await _questionService.GetQuestionById(User, questionId);
+        return StatusCode(response.StatusCode, response);
+    }
+    
+    [HttpPut("update")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Update question", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateQuestion([FromBody] UpdateQuestionDto updateQuestionDto)
@@ -67,7 +75,7 @@ public class QuestionController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpDelete("{questionId:guid}")]
+    [HttpDelete("delete/{questionId:guid}")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Delete question (soft delete)", Description = "Requires Teacher role")]
     public async Task<IActionResult>? DeleteQuestion([FromRoute] Guid questionId)

@@ -25,64 +25,79 @@ public class QuestionService : IQuestionService
 
     public async Task<ResponseDto> CreateQuestion(ClaimsPrincipal user, CreateQuestionDto createQuestionDto)
     {
-        try
-        {
-            if (createQuestionDto.SubjectId == Guid.Empty)
+        
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
             {
                 return ErrorResponse.Build(
-                    message: "SubjectId is required",
-                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
+                    message: StaticResponseMessage.User.NotFound,
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
             }
-
-            if (createQuestionDto.TeacherId == Guid.Empty)
-            {
-                return ErrorResponse.Build(
-                    message: "TeacherId is required",
-                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
-            }
-
-            if (createQuestionDto.LessonId == Guid.Empty)
-            {
-                return ErrorResponse.Build(
-                    message: "LessonId is required",
-                    statusCode: StaticOperationStatus.StatusCode.BadRequest);
-            }
-
-            // Validate FK: Teacher
-            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.TeacherId == createQuestionDto.TeacherId);
+            
+            // Lấy TeacherId từ người dùng hiện tại
+            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
             if (teacher == null)
             {
                 return ErrorResponse.Build(
-                    message: "Teacher not found",
+                    message: StaticResponseMessage.Teacher.NotFound,
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
             }
-
-            // Map data
+            
             var question = _mapper.Map<CreateQuestionDto, Question>(createQuestionDto);
-            question.TeacherId = createQuestionDto.TeacherId;
-            question.Status = StaticOperationStatus.BaseEntity.Active;
-            question.CreatedBy = user.FindFirstValue("Fullname");
+            question.TeacherId = teacher.TeacherId;
+            
+            var existQuestion = await _unitOfWork.Question.GetAsync(q => q.TeacherId == question.TeacherId 
+                                                                         && q.Content == question.Content);
+            if (existQuestion != null)
+            {
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.Question.AlreadyExist,
+                    statusCode: StaticOperationStatus.StatusCode.Conflict); 
+            }
+            
+            question.CreatedBy = user.FindFirstValue("FullName");
             question.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
+            question.Status = StaticOperationStatus.BaseEntity.Active;
 
-            await _unitOfWork.Question.AddAsync(question);
-            await _unitOfWork.SaveAsync();
-
-            return SuccessResponse.Build(
-                message: StaticResponseMessage.Question.Created,
-                statusCode: StaticOperationStatus.StatusCode.Created,
-                result: question);
-        }
-        catch (Exception ex)
-        {
-            return ErrorResponse.Build(
+            try
+            {
+                await _unitOfWork.Question.AddAsync(question);
+                await _unitOfWork.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                return ErrorResponse.Build(
                 message: StaticResponseMessage.Question.NotCreated + ex.Message,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
-        }
+            }
+            var resultDto = _mapper.Map<QuestionDto>(question); 
+            
+            return SuccessResponse.Build(
+                message: StaticResponseMessage.Question.Created,
+                statusCode: StaticOperationStatus.StatusCode.Ok,
+                result: resultDto);
     }
 
     public async Task<ResponseDto> UpdateQuestion(ClaimsPrincipal user, UpdateQuestionDto updateQuestionDto)
     {
-        var question =  await _unitOfWork.Question.GetAsync(s => s.QuestionId == updateQuestionDto.QuestionId);
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.User.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        var userTeacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (userTeacher is null)
+        {
+            return ErrorResponse.Build(
+                message: "User is not a valid teacher.",
+                statusCode: StaticOperationStatus.StatusCode.Forbidden); // 403 Forbidden
+        }
+        
+        var question =  await _unitOfWork.Question.GetAsync(s => s.QuestionId == updateQuestionDto.QuestionId,
+            includeProperties: "Teacher.ApplicationUser");
         if (question == null)
         {
             return ErrorResponse.Build(
@@ -90,38 +105,38 @@ public class QuestionService : IQuestionService
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
         
-        // Nếu Subject/Teacher/Lesson có thay đổi -> validate tồn tại
-        
-        if (updateQuestionDto.TeacherId != Guid.Empty && updateQuestionDto.TeacherId != question.TeacherId)
+        // Lấy TeacherId từ người dùng hiện tại
+        var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (teacher == null)
         {
-            var teacher = await _unitOfWork.Teacher.GetAsync(s => s.TeacherId == updateQuestionDto.TeacherId);
-            if (teacher == null)
-            {
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Teacher.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
-            }
-            question.TeacherId = updateQuestionDto.TeacherId;
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.Teacher.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
         
         // Map data
         var updateQuestion = _mapper.Map<UpdateQuestionDto, Question>(updateQuestionDto);
-        question.UpdatedBy = user.FindFirstValue("Fullname");
-        question.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
-        question.Status = updateQuestion.Status;
+        updateQuestion.TeacherId = teacher.TeacherId; // Đảm bảo TeacherId được giữ nguyên
+        updateQuestion.UpdatedBy = user.FindFirstValue("Fullname");
+        updateQuestion.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+        updateQuestion.Status = updateQuestion.Status;
+        updateQuestion.CreatedBy = question.CreatedBy;
+        updateQuestion.CreatedTime = question.CreatedTime;
         
         // Update Question
         _unitOfWork.Question.Update(question, updateQuestion);
         
-        return (!await SaveChangesAsync()) ?
-            ErrorResponse.Build(
-                message: StaticResponseMessage.Question.NotUpdated,
-                statusCode: StaticOperationStatus.StatusCode.InternalServerError)
-            :
+        var resultDto =  _mapper.Map<QuestionDto>(question);
+        
+        return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Question.Updated,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: updateQuestion);
+                result: resultDto)
+            :
+            ErrorResponse.Build(
+                message: StaticResponseMessage.Question.NotUpdated,
+                statusCode: StaticOperationStatus.StatusCode.InternalServerError);
     }
 
     public async Task<ResponseDto> GetAllQuestions
@@ -161,7 +176,7 @@ public class QuestionService : IQuestionService
                     result: emptyResult);
             }
             
-            var questionDto = _mapper.Map<IEnumerable<Question>>(questions);
+            var questionDto = _mapper.Map<IEnumerable<QuestionDto>>(questions);
 
             var result = new
             {
@@ -198,6 +213,8 @@ public class QuestionService : IQuestionService
         
         var getQuestionById = await _unitOfWork.Question.GetAsync(s => s.QuestionId == questionId 
                                                                && s.Status != StaticOperationStatus.BaseEntity.Deleted);
+        var resultDto = _mapper.Map<QuestionDto>(getQuestionById);
+        
         return (getQuestionById is null) ?
             ErrorResponse.Build(
                 message: StaticResponseMessage.Question.NotFound,
@@ -206,12 +223,13 @@ public class QuestionService : IQuestionService
             SuccessResponse.Build(
                 message: StaticResponseMessage.Question.Found,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: getQuestionById);
+                result: resultDto);
     }
 
     public async Task<ResponseDto> DeleteQuestion(ClaimsPrincipal user, Guid questionId)
     {
-        if (user.FindFirstValue(ClaimTypes.NameIdentifier) is null)
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
         {
             return ErrorResponse.Build(
                 message: StaticResponseMessage.User.NotFound,
@@ -226,16 +244,36 @@ public class QuestionService : IQuestionService
                 message: StaticResponseMessage.Question.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
+        
+        // Kiểm tra xem người dùng hiện tại có phải là giáo viên sở hữu câu hỏi này không
+        var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (teacher == null)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.Teacher.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        // Chỉ cho phép giáo viên sở hữu câu hỏi hoặc admin xóa câu hỏi
+        var isAdmin = user.FindFirstValue(ClaimTypes.Role) == StaticUserRoles.Admin;
+        if (deleteQuestion.TeacherId != teacher.TeacherId && !isAdmin)
+        {
+            return ErrorResponse.Build(
+                message: "Bạn không có quyền xóa câu hỏi này",
+                statusCode: StaticOperationStatus.StatusCode.Forbidden);
+        }
 
         deleteQuestion.Status = StaticOperationStatus.BaseEntity.Deleted;
         deleteQuestion.UpdatedBy = user.FindFirstValue("Fullname");
         deleteQuestion.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         
+        var resultDto =  _mapper.Map<QuestionDto>(deleteQuestion);
+        
         return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Question.Deleted,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: deleteQuestion)
+                result: resultDto)
             :
             ErrorResponse.Build(
                 message: StaticResponseMessage.Question.NotDeleted,

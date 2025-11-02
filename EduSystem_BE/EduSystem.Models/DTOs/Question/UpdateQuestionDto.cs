@@ -5,19 +5,10 @@ namespace EduSystem.Models.DTO.Question;
 public class UpdateQuestionDto
 {
     public Guid QuestionId { get; set; } 
-    public string QuestionText { get; set; }
-    public string QuestionType { get; set; }
-    public string? DifficultyLevel { get; set; }
-    public string? GradeLevel { get; set; }
-    public int? Points { get; set; }
-    public int? TimeLimit { get; set; }
-    
-    [Required]
-    public Guid? SubjectId { get; set; }
-    
-    [Required]
-    public Guid? LessonId { get; set; }
-
-    [Required]
-    public Guid TeacherId { get; set; }
+    public string? Content { get; set; }
+    public string? QuestionType { get; set; }
+    public string? Level { get; set; }
+    public string? SkillType { get; set; }
+    public string? EnglishLevel { get; set; }
+    public decimal? Score { get; set; }
 }

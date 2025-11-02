@@ -24,7 +24,8 @@ namespace EduSystem.DataAccess.Repositories
             bool isAdmin = false, 
             string? includeProperties = null)
         {
-            var query = _context.Units.Include(u => u.Teacher).ThenInclude(t => t.ApplicationUser).AsQueryable();
+            var query = _context.Units.Include(u => u.Teacher).
+                ThenInclude(t => t.ApplicationUser).AsQueryable();
 
             // Filter by status for non-admin users
             if (!isAdmin)

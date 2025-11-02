@@ -76,12 +76,12 @@ public class UnitService : IUnitService
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
         
-        var result = _mapper.Map<UnitDto>(createUnit);
+        var resultDto = _mapper.Map<UnitDto>(createUnit);
         
         return SuccessResponse.Build(
             message: StaticResponseMessage.Unit.Created,
             statusCode: StaticOperationStatus.StatusCode.Ok,
-            result: result);
+            result: resultDto);
     }
 
     public async Task<ResponseDto> UpdateUnit(ClaimsPrincipal user, UpdateUnitDto updateUnitDto)
@@ -122,13 +122,13 @@ public class UnitService : IUnitService
         
         _unitOfWork.Unit.Update(updateUnit, updatedUnit);
         
-        var result =  _mapper.Map<UnitDto>(updateUnit);
+        var resultDto =  _mapper.Map<UnitDto>(updateUnit);
         
         return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Unit.Updated,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: result)
+                result: resultDto)
             :
             ErrorResponse.Build(
                 message: StaticResponseMessage.Unit.NotUpdated,
@@ -234,7 +234,8 @@ public class UnitService : IUnitService
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
         // Include Teacher to prepare for DTO mapping
-        var deleteUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == unitId, includeProperties: "Teacher"); 
+        var deleteUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == unitId 
+        &&  u.Status != StaticOperationStatus.BaseEntity.Deleted); 
         if (deleteUnit is null)
         {
             return ErrorResponse.Build(

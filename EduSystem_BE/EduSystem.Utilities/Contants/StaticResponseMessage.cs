@@ -86,6 +86,7 @@
         {
             public const string Created = "Question(s) created successfully";
             public const string NotCreated = "Question(s) cannot create beacause: ";
+            public const string AlreadyExist = "Question already exist: ";
             public const string Updated = "Question(s) updated successfully";
             public const string NotUpdated = "Question cannot update";
             public const string NotFound = "Question not found";
