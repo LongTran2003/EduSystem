@@ -64,11 +64,13 @@ public class LessonService : ILessonService
 
             await _unitOfWork.Lesson.AddAsync(lesson);
             await _unitOfWork.SaveAsync();
-
+            
+            var result = _mapper.Map<LessonDto>(lesson);
+            
             return SuccessResponse.Build(
                 message: StaticResponseMessage.Lesson.Created,
                 statusCode: StaticOperationStatus.StatusCode.Created,
-                result: lesson);
+                result: result);
         }
         catch (Exception ex)
         {
@@ -80,7 +82,8 @@ public class LessonService : ILessonService
 
     public async Task<ResponseDto> UpdateLesson(ClaimsPrincipal user, UpdateLessonDto updateLessonDto)
     {
-        var lesson = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == updateLessonDto.LessonId);
+        var lesson = await _unitOfWork.Lesson.GetAsync(s => s.LessonId == updateLessonDto.LessonId 
+                                                            && s.Status != StaticOperationStatus.BaseEntity.Deleted);
         if (lesson == null)
         {
             return ErrorResponse.Build(
@@ -89,9 +92,11 @@ public class LessonService : ILessonService
         }
         
         var updateLesson = _mapper.Map<UpdateLessonDto, Lesson>(updateLessonDto);
-        lesson.UpdatedBy = user.FindFirstValue("Fullname");
-        lesson.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
-        lesson.Status = updateLesson.Status;
+        updateLesson.UpdatedBy = user.FindFirstValue("Fullname");
+        updateLesson.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+        updateLesson.CreatedBy = lesson.CreatedBy;
+        updateLesson.UpdatedTime = lesson.UpdatedTime;
+        updateLesson.Status = lesson.Status;
         
         // Update Subject
         _unitOfWork.Lesson.Update(lesson, updateLesson);
@@ -145,7 +150,7 @@ public class LessonService : ILessonService
                     result: emptyResult);
             }
             
-            var lessonsDto = _mapper.Map<IEnumerable<Lesson>>(lessons);
+            var lessonsDto = _mapper.Map<IEnumerable<LessonDto>>(lessons);
 
             var result = new
             {
@@ -215,11 +220,13 @@ public class LessonService : ILessonService
         deleteLesson.UpdatedBy = user.FindFirstValue("Fullname");
         deleteLesson.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         
+        var resultDto = _mapper.Map<LessonDto>(deleteLesson);
+        
         return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Lesson.Deleted,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: deleteLesson)
+                result: resultDto)
             :
             ErrorResponse.Build(
                 message: StaticResponseMessage.Lesson.NotDeleted,

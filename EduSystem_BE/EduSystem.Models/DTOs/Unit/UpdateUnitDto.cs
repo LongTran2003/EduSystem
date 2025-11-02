@@ -3,7 +3,6 @@
 public class UpdateUnitDto
 {
     public Guid UnitId { get; set; }
-    public Guid TeacherId { get; set; }
     public string UnitName { get; set; } = null!;
     public string? EnglishLevel { get; set; }
     public string? Description { get; set; }

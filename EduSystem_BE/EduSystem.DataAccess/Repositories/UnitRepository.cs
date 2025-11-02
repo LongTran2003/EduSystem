@@ -33,7 +33,7 @@ namespace EduSystem.DataAccess.Repositories
             }
 
             // Apply filters
-            if (!string.IsNullOrWhiteSpace(filterOn) && !string.IsNullOrWhiteSpace(filterQuery))
+            if (!string.IsNullOrEmpty(filterOn) && !string.IsNullOrEmpty(filterQuery))
             {
                 filterOn = filterOn.Trim().ToLower();
                 filterQuery = filterQuery.Trim();
@@ -49,7 +49,7 @@ namespace EduSystem.DataAccess.Repositories
             }
 
             // Apply sorting
-            if (!string.IsNullOrWhiteSpace(sortBy))
+            if (!string.IsNullOrEmpty(sortBy))
             {
                 sortBy = sortBy.Trim().ToLower();
 
@@ -71,7 +71,7 @@ namespace EduSystem.DataAccess.Repositories
             }
 
             // Include navigation properties if specified
-            if (!string.IsNullOrWhiteSpace(includeProperties))
+            if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach (var property in includeProperties.Split(new char[] { ',' },
                              StringSplitOptions.RemoveEmptyEntries))

@@ -24,15 +24,26 @@ public class UnitService : IUnitService
     
     public async Task<ResponseDto> CreateUnit(ClaimsPrincipal user, CreateUnitDto createUnitDto)
     {
-        if (user.FindFirstValue(ClaimTypes.NameIdentifier) is null)
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
         {
             return ErrorResponse.Build(
                 message: StaticResponseMessage.User.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
         
-        // Map dữ liệu qua Dto
+        // Lấy TeacherId từ người dùng hiện tại
+        var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (teacher == null)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.Teacher.NotFound,
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+        
+        // Map dữ liệu qua Dto và gán TeacherId từ người dùng hiện tại
         var createUnit = _mapper.Map<CreateUnitDto, Unit>(createUnitDto);
+        createUnit.TeacherId = teacher.TeacherId;
         
         // Check xem UnitName đã tồn tại với gvien đó chưa
         var existingUnit = await _unitOfWork.Unit.GetAsync(u =>
@@ -43,7 +54,6 @@ public class UnitService : IUnitService
         if (existingUnit != null)
         {
             // Nếu tìm thấy, tức là đã tồn tại -> Trả về lỗi
-            // Bạn nên tạo một message mới trong StaticResponseMessage, ví dụ: Unit.AlreadyExists
             return ErrorResponse.Build(
                 message: StaticResponseMessage.Unit.AlreadyExist,
                 statusCode: StaticOperationStatus.StatusCode.Conflict); // 409 Conflict là mã lỗi phù hợp
@@ -54,10 +64,6 @@ public class UnitService : IUnitService
         createUnit.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
         createUnit.Status = StaticOperationStatus.BaseEntity.Active;
         
-        // Map trả lại kết quả qua UnitDto
-        createUnit.Teacher = await _unitOfWork.Teacher.GetAsync(u => u.TeacherId ==  createUnit.TeacherId, 
-            includeProperties: "ApplicationUser");
-        
         try
         {
             await _unitOfWork.Unit.AddAsync(createUnit);
@@ -66,7 +72,7 @@ public class UnitService : IUnitService
         catch (Exception ex)
         {
             return ErrorResponse.Build(
-                message: StaticResponseMessage.Unit.NotCreated,
+                message: StaticResponseMessage.Unit.NotCreated + ex.Message,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
         
@@ -80,14 +86,24 @@ public class UnitService : IUnitService
 
     public async Task<ResponseDto> UpdateUnit(ClaimsPrincipal user, UpdateUnitDto updateUnitDto)
     {
-        if (user.FindFirstValue(ClaimTypes.NameIdentifier) is null)
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
         {
             return ErrorResponse.Build(
                 message: StaticResponseMessage.User.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
 
-        var updateUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == updateUnitDto.UnitId);
+        var userTeacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+        if (userTeacher is null)
+        {
+            return ErrorResponse.Build(
+                message: "User is not a valid teacher.",
+                statusCode: StaticOperationStatus.StatusCode.Forbidden); // 403 Forbidden
+        }
+        
+        var updateUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == updateUnitDto.UnitId,
+            includeProperties: "Teacher.ApplicationUser");
         if (updateUnit is null)
         {
             return ErrorResponse.Build(
@@ -95,18 +111,28 @@ public class UnitService : IUnitService
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
 
+        // Preserve the TeacherId from the existing unit
         var updatedUnit = _mapper.Map<UpdateUnitDto, Unit>(updateUnitDto);
+        updatedUnit.TeacherId = updateUnit.TeacherId; // Keep the original TeacherId
+        updatedUnit.Status = StaticOperationStatus.BaseEntity.Active;
+        updatedUnit.CreatedBy = updateUnit.CreatedBy;
+        updatedUnit.CreatedTime = updateUnit.CreatedTime;
+        updatedUnit.UpdatedBy = user.FindFirstValue("FullName");
+        updatedUnit.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+        
         _unitOfWork.Unit.Update(updateUnit, updatedUnit);
-
-        return (!await SaveChangesAsync()) ?
-            ErrorResponse.Build(
-                message: StaticResponseMessage.Unit.NotUpdated,
-                statusCode: StaticOperationStatus.StatusCode.InternalServerError)
-            :
+        
+        var result =  _mapper.Map<UnitDto>(updateUnit);
+        
+        return (await SaveChangesAsync()) ?
             SuccessResponse.Build(
                 message: StaticResponseMessage.Unit.Updated,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: updatedUnit);
+                result: result)
+            :
+            ErrorResponse.Build(
+                message: StaticResponseMessage.Unit.NotUpdated,
+                statusCode: StaticOperationStatus.StatusCode.InternalServerError);
     }
 
     public async Task<ResponseDto> GetUnitDetailsById(ClaimsPrincipal user, Guid unitId)
@@ -118,16 +144,24 @@ public class UnitService : IUnitService
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
 
-        var getUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == unitId && u.Status != StaticOperationStatus.BaseEntity.Deleted);
-        return (getUnit is null) ?
-            ErrorResponse.Build(
+        // 1. Tải Entity Unit và Entity Teacher liên quan
+        var getUnit = await _unitOfWork.Unit.GetAsync(
+            u => u.UnitId == unitId && u.Status != StaticOperationStatus.BaseEntity.Deleted);
+    
+        if (getUnit is null)
+        {
+            return ErrorResponse.Build(
                 message: StaticResponseMessage.Unit.NotFound,
-                statusCode: StaticOperationStatus.StatusCode.NotFound)
-            :
-            SuccessResponse.Build(
-                message: StaticResponseMessage.Unit.Retrieved,
-                statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: getUnit);
+                statusCode: StaticOperationStatus.StatusCode.NotFound);
+        }
+    
+        // 2. Map Entity sang UnitDto để trả về (Bao gồm TeacherName)
+        var resultUnitDto = _mapper.Map<UnitDto>(getUnit);
+
+        return SuccessResponse.Build(
+            message: StaticResponseMessage.Unit.Retrieved,
+            statusCode: StaticOperationStatus.StatusCode.Ok,
+            result: resultUnitDto);
     }
 
     public async Task<ResponseDto> GetAllUnits(
@@ -199,7 +233,8 @@ public class UnitService : IUnitService
                 message: StaticResponseMessage.User.NotFound,
                 statusCode: StaticOperationStatus.StatusCode.NotFound);
         }
-        var deleteUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == unitId);
+        // Include Teacher to prepare for DTO mapping
+        var deleteUnit = await _unitOfWork.Unit.GetAsync(u => u.UnitId == unitId, includeProperties: "Teacher"); 
         if (deleteUnit is null)
         {
             return ErrorResponse.Build(
@@ -211,15 +246,21 @@ public class UnitService : IUnitService
         deleteUnit.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
         deleteUnit.UpdatedBy = user.FindFirstValue("FullName");
 
-        return (await SaveChangesAsync()) ?
-            SuccessResponse.Build(
+        if (await SaveChangesAsync())
+        {
+            // Map the updated entity to DTO for consistent return type
+            var resultUnitDto = _mapper.Map<UnitDto>(deleteUnit); 
+            return SuccessResponse.Build(
                 message: StaticResponseMessage.Unit.Deleted,
                 statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: deleteUnit)
-            :
-            ErrorResponse.Build(
+                result: resultUnitDto); // Return DTO
+        }
+        else
+        {
+            return ErrorResponse.Build(
                 message: StaticResponseMessage.Unit.NotDeleted,
                 statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+        }
     }
     
     private async Task<bool> SaveChangesAsync()

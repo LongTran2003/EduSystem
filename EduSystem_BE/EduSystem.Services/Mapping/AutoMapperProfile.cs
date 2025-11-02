@@ -83,6 +83,21 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating));
 
             // Lesson to LessonDto
+            CreateMap<Lesson, LessonDto>()
+                .ForMember(dest => dest.LessonId, opt => opt.MapFrom(src => src.LessonId))
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.UnitName))
+                .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.LessonName))
+                .ForMember(dest => dest.Skill, opt => opt.MapFrom(src => src.Skill))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Duration))
+                .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreateBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreateTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdateBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();
+            
             CreateMap<Lesson, CreateLessonDto>()
                 .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.UnitId))
                 .ForMember(dest => dest.LessonName, opt => opt.MapFrom(src => src.LessonName))
@@ -171,11 +186,15 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.LearningObjectives, opt => opt.MapFrom(src => src.LearningObjectives))
                 .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreateBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreateTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdateBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => src.UpdatedTime))
                 .ReverseMap();
             
             CreateMap<Unit, CreateUnitDto>()
-                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
-                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitName))
+                    .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitName))
                 .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.LearningObjectives, opt => opt.MapFrom(src => src.LearningObjectives))
@@ -183,8 +202,7 @@ namespace EduSystem.Services.Mapping
                 .ReverseMap();
             
             CreateMap<Unit, UpdateUnitDto>()
-                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.UnitId))
-                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.Teacher))
+                .ForMember(dest => dest.UnitId, opt => opt.Ignore())
                 .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitName))
                 .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))

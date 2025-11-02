@@ -38,7 +38,7 @@ public class LessonController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpGet]
+    [HttpGet("get/all")]
     [SwaggerOperation(Summary = "Get all lessons", Description = "Requires authentication")]
     public async Task<IActionResult> GetAllLessons(
         [FromQuery] int pageNumber = 1,
@@ -51,8 +51,16 @@ public class LessonController : ControllerBase
             User, pageNumber, pageSize, filterOn, filterQuery, sortBy);
         return StatusCode(response.StatusCode, response);
     }
+
+    [HttpGet("get/{lessonId:guid}")]
+    [SwaggerOperation(Summary = "Get lesson by id", Description = "Requires authentication")]
+    public async Task<IActionResult> GetLessonById([FromRoute] Guid lessonId)
+    {
+        var response = await _lessonService.GetLessonById(User, lessonId);
+        return StatusCode(response.StatusCode, response);
+    }
     
-    [HttpPut]
+    [HttpPut("update")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Update lesson", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateLesson([FromBody] UpdateLessonDto updateLessonDto)
@@ -66,7 +74,7 @@ public class LessonController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpDelete("{lessonId:guid}")]
+    [HttpDelete("delete/{lessonId:guid}")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Delete lesson (soft delete)", Description = "Requires Teacher role")]
     public async Task<IActionResult>? DeleteLesson([FromRoute] Guid lessonId)
