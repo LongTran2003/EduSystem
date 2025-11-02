@@ -95,5 +95,20 @@
             public const string Deleted = "Question(s) deleted successfully";
             public const string NotDeleted = "Question cannot delete";
         }
+        
+        public static class Unit
+        {
+            public const string Created = "Unit(s) created successfully";
+            public const string NotCreated = "Unit(s) cannot create beacause: ";
+            public const string AlreadyExist = "Unit(s) already exist ";
+            public const string Updated = "Unit(s) updated successfully";
+            public const string NotUpdated = "Unit cannot update";
+            public const string NotFound = "Unit not found";
+            public const string Found = "Unit found";
+            public const string Retrieved = "Unit information retrieved successfully";
+            public const string NotRetrieved = "Unit information cannot retrieved";
+            public const string Deleted = "Unit(s) deleted successfully";
+            public const string NotDeleted = "Unit cannot delete";
+        }
     }
 }

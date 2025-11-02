@@ -57,11 +57,11 @@ namespace EduSystem.DataAccess.Repositories
                 query = sortBy switch
                 {
                     "lessonname" => query.OrderBy(s => s.LessonName),
-                    "lessonnamedesc" => query.OrderByDescending(s => s.LessonName),
+                    "lessonname_desc" => query.OrderByDescending(s => s.LessonName),
                     "skill" => query.OrderBy(s => s.Skill),
                     "content" => query.OrderBy(s => s.Content),
                     "orderindex" => query.OrderBy(s => s.OrderIndex),
-                    "orderindexdesc" => query.OrderByDescending(s => s.OrderIndex),
+                    "orderindex_desc" => query.OrderByDescending(s => s.OrderIndex),
                     "createdtime" => query.OrderByDescending(s => s.CreatedTime),
                     _ => query.OrderByDescending(s => s.CreatedTime)
                 };

@@ -4,6 +4,7 @@ using EduSystem.Models.DTO.Lesson;
 using EduSystem.Models.DTO.Question;
 using EduSystem.Models.DTO.Quiz;
 using EduSystem.Models.DTO.Student;
+using EduSystem.Models.DTO.Unit;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 
@@ -160,6 +161,38 @@ namespace EduSystem.Services.Mapping
             //    .ForMember(dest => dest.LessonId, opt => opt.MapFrom(src => src.LessonId))
             //    .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
             //    .ReverseMap();
+            
+            // Unit to UnitDto
+            CreateMap<Unit, UnitDto>()
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.UnitId))
+                .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src => src.Teacher.ApplicationUser.FullName))
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitName))
+                .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.LearningObjectives, opt => opt.MapFrom(src => src.LearningObjectives))
+                .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex))
+                .ReverseMap();
+            
+            CreateMap<Unit, CreateUnitDto>()
+                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.TeacherId))
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitName))
+                .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.LearningObjectives, opt => opt.MapFrom(src => src.LearningObjectives))
+                .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex))
+                .ReverseMap();
+            
+            CreateMap<Unit, UpdateUnitDto>()
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.UnitId))
+                .ForMember(dest => dest.TeacherId, opt => opt.MapFrom(src => src.Teacher))
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.UnitName))
+                .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.LearningObjectives, opt => opt.MapFrom(src => src.LearningObjectives))
+                .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex))
+                .ReverseMap();
+            
+            
 
         }
     }

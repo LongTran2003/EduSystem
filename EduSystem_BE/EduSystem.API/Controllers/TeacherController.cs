@@ -19,7 +19,7 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
+        //[Authorize(Roles = "ADMIN")]
         [SwaggerOperation(Summary = "API get all teachers's account", Description = "Requires Admin")]
         public async Task<IActionResult> GetAllTeachers(
             [FromQuery] int pageNumber = 1,

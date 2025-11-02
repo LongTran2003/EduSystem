@@ -11,7 +11,7 @@ namespace EduSystem.Models.Entities
 
         public Guid TeacherId { get; set; }
         [ForeignKey("TeacherId")]
-        public virtual Teacher Teacher { get; set; } = null!;
+        public virtual Teacher? Teacher { get; set; } = null!;
 
         [StringLength(200)]
         public string UnitName { get; set; } = null!;
