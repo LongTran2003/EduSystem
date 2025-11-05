@@ -16,7 +16,7 @@ namespace EduSystem.Models.Entities
         [StringLength(100)]
         public string? Specialization { get; set; } // Chuyên môn, ví dụ: Toán học, Vật lý, v.v.
 
-        [StringLength(50)] public int TeachingExperience { get; set; } = 0; // Kinh nghiệm giảng dạy: 5+ years, 10+ years
+        public int TeachingExperience { get; set; } = 0; // Kinh nghiệm giảng dạy: 5+ years, 10+ years
 
         [Column(TypeName = "decimal(3,2)")]
         public decimal? Rating { get; set; }

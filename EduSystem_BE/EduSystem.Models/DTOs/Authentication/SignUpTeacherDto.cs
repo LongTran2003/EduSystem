@@ -41,7 +41,6 @@ namespace EduSystem.Models.DTO.Authentication
         [StringLength(100)]
         public string? Specialization { get; set; }
 
-        [StringLength(50)]
         public int TeachingExperience { get; set; }
 
         [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5")]
