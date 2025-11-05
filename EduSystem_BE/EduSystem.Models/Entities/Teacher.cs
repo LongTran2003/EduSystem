@@ -20,5 +20,11 @@ namespace EduSystem.Models.Entities
 
         [Column(TypeName = "decimal(3,2)")]
         public decimal? Rating { get; set; }
+
+        // Thêm các thuộc tính ICollection dưới đây
+        public virtual ICollection<Unit> Units { get; set; } = new List<Unit>();
+        public virtual ICollection<Matrix> Matrices { get; set; } = new List<Matrix>();
+        public virtual ICollection<Question> Questions { get; set; } = new List<Question>();
+        public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
     }
 }

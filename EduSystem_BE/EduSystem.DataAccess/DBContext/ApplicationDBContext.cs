@@ -65,7 +65,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasKey(m => m.MatrixId);
             modelBuilder.Entity<Matrix>()
                 .HasOne(m => m.Teacher)
-                .WithMany()
+                .WithMany(t => t.Matrices)
                 .HasForeignKey(m => m.TeacherId);
 
             // MatrixDetail configuration
@@ -81,7 +81,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasKey(q => q.QuestionId);
             modelBuilder.Entity<Question>()
                 .HasOne(q => q.Teacher)
-                .WithMany()
+                .WithMany(t => t.Questions)
                 .HasForeignKey(q => q.TeacherId);
 
             // Quiz configuration
@@ -93,7 +93,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasForeignKey(q => q.MatrixId);
             modelBuilder.Entity<Quiz>()
                 .HasOne(q => q.Teacher)
-                .WithMany()
+                .WithMany(t => t.Quizzes)
                 .HasForeignKey(q => q.TeacherId);
 
             // QuizAttempt configuration
@@ -101,7 +101,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasKey(qa => qa.QuizAttemptId);
             modelBuilder.Entity<QuizAttempt>()
                 .HasOne(qa => qa.Student)
-                .WithMany()
+                .WithMany(s => s.QuizAttempts)
                 .HasForeignKey(qa => qa.StudentId);
             modelBuilder.Entity<QuizAttempt>()
                 .HasOne(qa => qa.Quiz)
@@ -141,7 +141,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasForeignKey(sa => sa.QuestionId);
             modelBuilder.Entity<StudentAnswer>()
                 .HasOne(sa => sa.Answer)
-                .WithMany()
+                .WithMany(a => a.StudentAnswers)
                 .HasForeignKey(sa => sa.AnswerId);
 
             // StudentProgress configuration (Composite Key)
@@ -149,7 +149,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasKey(sp => new { sp.StudentId, sp.LessonId });
             modelBuilder.Entity<StudentProgress>()
                 .HasOne(sp => sp.Student)
-                .WithMany()
+                .WithMany(s => s.StudentProgresses)
                 .HasForeignKey(sp => sp.StudentId);
             modelBuilder.Entity<StudentProgress>()
                 .HasOne(sp => sp.Lesson)
@@ -169,7 +169,7 @@ namespace EduSystem.DataAccess.DBContext
                 .HasKey(u => u.UnitId);
             modelBuilder.Entity<Unit>()
                 .HasOne(u => u.Teacher)
-                .WithMany()
+                .WithMany(t => t.Units)
                 .HasForeignKey(u => u.TeacherId);
 
         }

@@ -23,5 +23,9 @@ namespace EduSystem.Models.Entities
         [StringLength(100)]
         public string? School { get; set; } // Trường học
 
+        // Thêm các thuộc tính ICollection dưới đây
+        public virtual ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
+        public virtual ICollection<StudentProgress> StudentProgresses { get; set; } = new List<StudentProgress>();
+
     }
 }

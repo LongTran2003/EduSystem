@@ -17,5 +17,8 @@ namespace EduSystem.Models.Entities
         public bool IsCorrect { get; set; }
 
         public string? Explanation { get; set; }
+
+        // Thêm thuộc tính ICollection dưới đây
+        public virtual ICollection<StudentAnswer> StudentAnswers { get; set; } = new List<StudentAnswer>();
     }
 }
