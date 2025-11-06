@@ -13,18 +13,29 @@ namespace EduSystem.Models.Entities
         [ForeignKey("TeacherId")]
         public virtual Teacher Teacher { get; set; } = null!;
 
+        [Required]
+        [StringLength(200)]
+        public string Title { get; set; } = null!; 
+
+        [Required]
         public string Content { get; set; } = null!;
 
-        public string? QuestionType { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string QuestionType { get; set; } = null!;
 
-        public string? Level { get; set; } // 1:Easy, 2:Medium, 3:Hard
-
+        [Required]
+        [StringLength(20)]
+        public string Level { get; set; } = "Easy"; 
+        
         [StringLength(50)]
         public string? SkillType { get; set; }
 
         [StringLength(20)]
         public string? EnglishLevel { get; set; }
 
+        [Required]
+        [Range(0.0, 10.0)]
         [Column(TypeName = "decimal(5,2)")]
         public decimal Score { get; set; }
 

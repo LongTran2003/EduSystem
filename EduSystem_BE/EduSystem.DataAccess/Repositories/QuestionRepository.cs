@@ -40,12 +40,13 @@ namespace EduSystem.DataAccess.Repositories
 
                 query = filterOn switch
                 {
-                    "content" => query.Where(s => s.Content.Contains(filterQuery)),
-                    "questiontype" => query.Where(s => s.QuestionType != null && s.QuestionType.Contains(filterQuery)),
-                    "level" => query.Where(s => s.Level != null && s.Level.Contains(filterQuery)),
-                    "skilltype" => query.Where(s => s.SkillType != null && s.SkillType.Contains(filterQuery)),
-                    "englishlevel" => query.Where(s =>
-                        s.EnglishLevel != null && s.EnglishLevel.Contains(filterQuery)),
+                    "title" => query.Where(q => q.Title.Contains(filterQuery)),
+                    "content" => query.Where(q => q.Content.Contains(filterQuery)),
+                    "type" => query.Where(q => q.QuestionType.Contains(filterQuery)),
+                    "level" => query.Where(q => q.Level.Contains(filterQuery)),
+                    "skilltype" => query.Where(q => q.SkillType != null && q.SkillType.Contains(filterQuery)),
+                    "englishlevel" => query.Where(q => q.EnglishLevel != null && q.EnglishLevel.Contains(filterQuery)),
+                    "score" => query.Where(q => q.Score.ToString().Contains(filterQuery)),
                     "status" => query.Where(s => s.Status == StaticOperationStatus.BaseEntity.Active),
                     _ => query
                 };
@@ -54,23 +55,20 @@ namespace EduSystem.DataAccess.Repositories
             // Apply sorting
             if (!string.IsNullOrWhiteSpace(sortBy))
             {
-                sortBy = sortBy.Trim().ToLower();
-
                 query = sortBy switch
                 {
-                    "content" => query.OrderBy(q => q.Content),
-                    "contentdesc" => query.OrderByDescending(q => q.Content),
-                    "questiontype" => query.OrderBy(q => q.QuestionType),
+                    "title" => query.OrderBy(q => q.Title),
+                    "title_desc" => query.OrderByDescending(q => q.Title),
+                    "type" => query.OrderBy(q => q.QuestionType),
+                    "type_desc" => query.OrderByDescending(q => q.QuestionType),
                     "level" => query.OrderBy(q => q.Level),
-                    "skilltype" => query.OrderBy(q => q.SkillType),
-                    "englishlevel" => query.OrderBy(q => q.EnglishLevel),
-                    "createdtime" => query.OrderByDescending(q => q.CreatedTime),
+                    "level_desc" => query.OrderByDescending(q => q.Level),
+                    "score" => query.OrderBy(q => q.Score),
+                    "score_desc" => query.OrderByDescending(q => q.Score),
+                    "createdtime" => query.OrderBy(q => q.CreatedTime),
+                    "createdtime_desc" => query.OrderByDescending(q => q.CreatedTime),
                     _ => query.OrderByDescending(q => q.CreatedTime)
                 };
-            }
-            else
-            {
-                query = query.OrderByDescending(s => s.CreatedTime);
             }
 
             // Include navigation properties if specified

@@ -6,7 +6,7 @@ namespace EduSystem.Models.DTOs.LessonContent
     {
         public Guid LessonId { get; set; }
         public string? ResourceType { get; set; }
-        public string ResourceUrl { get; set; }
+        public string ResourceUrl { get; set; } = null!;
         public string? Description { get; set; }
     }
 }
