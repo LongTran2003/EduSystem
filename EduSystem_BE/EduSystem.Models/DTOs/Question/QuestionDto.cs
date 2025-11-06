@@ -1,4 +1,6 @@
-﻿namespace EduSystem.Models.DTO.Question;
+﻿using EduSystem.Models.DTOs.Answer;
+
+namespace EduSystem.Models.DTO.Question;
 
 public class QuestionDto
 {
@@ -16,5 +18,5 @@ public class QuestionDto
     public DateTime CreatedTime { get; set; }
     public string? UpdatedBy { get; set; }
     public DateTime? UpdatedTime { get; set; }
-    /*public List<AnswerDto>? Answers { get; set; }*/
+    public List<AnswerDto>? Answers { get; set; }
 }

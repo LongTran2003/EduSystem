@@ -1,3 +1,4 @@
+using EduSystem.Models.DTOs.Answer;
 using System.ComponentModel.DataAnnotations;
 
 namespace EduSystem.Models.DTO.Question;
@@ -12,5 +13,5 @@ public class UpdateQuestionDto
     public string? SkillType { get; set; }
     public string? EnglishLevel { get; set; }
     public decimal? Score { get; set; }
-    /*public List<UpdateAnswerDto>? Answers { get; set; }*/
+    public List<UpdateAnswerDto>? Answers { get; set; }
 }

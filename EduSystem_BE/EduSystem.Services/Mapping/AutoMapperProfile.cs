@@ -5,9 +5,11 @@ using EduSystem.Models.DTO.Question;
 using EduSystem.Models.DTO.Quiz;
 using EduSystem.Models.DTO.Student;
 using EduSystem.Models.DTO.Unit;
+using EduSystem.Models.DTOs.Answer;
 using EduSystem.Models.DTOs.LessonContent;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
+using EduSystem.Utilities.Contants;
 
 namespace EduSystem.Services.Mapping
 {
@@ -162,6 +164,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.SkillType, opt => opt.MapFrom(src => src.SkillType))
                 .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
+                .ForMember(dest => dest.Answers, opt => opt.MapFrom(src => src.Answers.Where(a => a.Status != StaticOperationStatus.BaseEntity.Deleted)))
                 .ReverseMap();
             
             CreateMap<Question, CreateQuestionDto>()
@@ -171,6 +174,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.SkillType, opt => opt.MapFrom(src => src.SkillType))
                 .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
+                .ForMember(dest => dest.Answers, opt => opt.Ignore())
                 .ReverseMap();
 
             CreateMap<Question, UpdateQuestionDto>()
@@ -181,6 +185,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.SkillType, opt => opt.MapFrom(src => src.SkillType))
                 .ForMember(dest => dest.EnglishLevel, opt => opt.MapFrom(src => src.EnglishLevel))
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
+                .ForMember(dest => dest.Answers, opt => opt.Ignore())
                 .ReverseMap();
             
             // Unit to UnitDto
@@ -245,7 +250,33 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ReverseMap();
 
+            // Answer to AnswerDto
+            CreateMap<Answer, AnswerDto>()
+                .ForMember(dest => dest.AnswerId, opt => opt.MapFrom(src => src.AnswerId))
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.IsCorrect, opt => opt.MapFrom(src => src.IsCorrect))
+                .ForMember(dest => dest.Explanation, opt => opt.MapFrom(src => src.Explanation))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdatedTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();
 
+            CreateMap<Answer, CreateAnswerDto>()
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.IsCorrect, opt => opt.MapFrom(src => src.IsCorrect))
+                .ForMember(dest => dest.Explanation, opt => opt.MapFrom(src => src.Explanation))
+                .ReverseMap();
+
+            CreateMap<Answer, UpdateAnswerDto>()
+                .ForMember(dest => dest.AnswerId, opt => opt.MapFrom(src => src.AnswerId))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
+                .ForMember(dest => dest.IsCorrect, opt => opt.MapFrom(src => src.IsCorrect))
+                .ForMember(dest => dest.Explanation, opt => opt.MapFrom(src => src.Explanation))
+                .ReverseMap();
 
 
         }

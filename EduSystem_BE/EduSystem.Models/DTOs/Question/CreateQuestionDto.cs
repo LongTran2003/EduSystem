@@ -1,3 +1,4 @@
+using EduSystem.Models.DTOs.Answer;
 using System.ComponentModel.DataAnnotations;
 
 namespace EduSystem.Models.DTO.Question;
@@ -13,5 +14,5 @@ public class CreateQuestionDto
     
     [Range(0.0, 10.0)]
     public decimal Score { get; set; }
-    /*public List<CreateAnswerDto>? Answers { get; set; }*/
+    public List<CreateAnswerDto>? Answers { get; set; }
 }

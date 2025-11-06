@@ -40,7 +40,10 @@ namespace EduSystem.API.Extension
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ILessonContentService, LessonContentService>();
-            
+            services.AddScoped<IAnswerService, AnswerService>();
+
+
+
             return services;
         }
     }

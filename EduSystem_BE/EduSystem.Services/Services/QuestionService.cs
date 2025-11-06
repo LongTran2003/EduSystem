@@ -35,28 +35,46 @@ public class QuestionService : IQuestionService
                     message: StaticResponseMessage.User.UnAuthorized,
                     statusCode: StaticOperationStatus.StatusCode.Unauthorized);
 
-            // Get teacher from userId instead of dto
             var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
             if (teacher == null)
                 return ErrorResponse.Build(
                     message: StaticResponseMessage.Teacher.NotFound,
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
 
+            // Create question
             var question = _mapper.Map<Question>(createQuestionDto);
-            question.TeacherId = teacher.TeacherId; // Set TeacherId from found teacher
+            question.TeacherId = teacher.TeacherId;
             question.Status = StaticOperationStatus.BaseEntity.Active;
             question.CreatedBy = user.FindFirstValue("Fullname");
             question.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
 
             await _unitOfWork.Question.AddAsync(question);
+
+            // Create answers if provided
+            if (createQuestionDto.Answers != null && createQuestionDto.Answers.Any())
+            {
+                foreach (var answerDto in createQuestionDto.Answers)
+                {
+                    var answer = _mapper.Map<Answer>(answerDto);
+                    answer.QuestionId = question.QuestionId;
+                    answer.Status = StaticOperationStatus.BaseEntity.Active;
+                    answer.CreatedBy = user.FindFirstValue("Fullname");
+                    answer.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
+                    await _unitOfWork.Answer.AddAsync(answer);
+                }
+            }
+
             await _unitOfWork.SaveAsync();
 
-            var resultDto = _mapper.Map<QuestionDto>(question);
+            // Get question with answers for response
+            var resultQuestion = await _unitOfWork.Question
+                .GetAsync(q => q.QuestionId == question.QuestionId,
+                         includeProperties: "Answers");
 
             return SuccessResponse.Build(
                 message: StaticResponseMessage.Question.Created,
                 statusCode: StaticOperationStatus.StatusCode.Created,
-                result: resultDto);
+                result: _mapper.Map<QuestionDto>(resultQuestion));
         }
         catch (Exception ex)
         {
@@ -71,15 +89,18 @@ public class QuestionService : IQuestionService
         try
         {
             var question = await _unitOfWork.Question.GetAsync(
-                q => q.QuestionId == updateQuestionDto.QuestionId
-                && q.Status != StaticOperationStatus.BaseEntity.Deleted);
+            q => q.QuestionId == updateQuestionDto.QuestionId
+            && q.Status != StaticOperationStatus.BaseEntity.Deleted,
+            includeProperties: "Answers");
 
             if (question == null)
                 return ErrorResponse.Build(
                     message: StaticResponseMessage.Question.NotFound,
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
 
+            // Update question
             var updateQuestion = _mapper.Map<Question>(updateQuestionDto);
+            updateQuestion.TeacherId = question.TeacherId;
             updateQuestion.Status = question.Status;
             updateQuestion.CreatedBy = question.CreatedBy;
             updateQuestion.CreatedTime = question.CreatedTime;
@@ -88,15 +109,68 @@ public class QuestionService : IQuestionService
 
             _unitOfWork.Question.Update(question, updateQuestion);
 
-            return (await SaveChangesAsync()) ?
-                SuccessResponse.Build(
-                    message: StaticResponseMessage.Question.Updated,
-                    statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: _mapper.Map<QuestionDto>(updateQuestion))
-                :
-                ErrorResponse.Build(
+            // Update answers
+            if (updateQuestionDto.Answers != null)
+            {
+                // Delete removed answers
+                var existingAnswerIds = updateQuestionDto.Answers
+                    .Where(a => a.AnswerId != Guid.Empty)
+                    .Select(a => a.AnswerId);
+                var answersToDelete = question.Answers
+                    .Where(a => !existingAnswerIds.Contains(a.AnswerId));
+                foreach (var answer in answersToDelete)
+                {
+                    answer.Status = StaticOperationStatus.BaseEntity.Deleted;
+                    answer.UpdatedBy = user.FindFirstValue("Fullname");
+                    answer.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+                }
+
+                // Update existing and add new answers
+                foreach (var answerDto in updateQuestionDto.Answers)
+                {
+                    if (answerDto.AnswerId == Guid.Empty)
+                    {
+                        // New answer
+                        var newAnswer = _mapper.Map<Answer>(answerDto);
+                        newAnswer.QuestionId = question.QuestionId;
+                        newAnswer.Status = StaticOperationStatus.BaseEntity.Active;
+                        newAnswer.CreatedBy = user.FindFirstValue("Fullname");
+                        newAnswer.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
+                        await _unitOfWork.Answer.AddAsync(newAnswer);
+                    }
+                    else
+                    {
+                        // Update existing answer
+                        var existingAnswer = question.Answers
+                            .FirstOrDefault(a => a.AnswerId == answerDto.AnswerId);
+                        if (existingAnswer != null)
+                        {
+                            var updateAnswer = _mapper.Map<Answer>(answerDto);
+                            updateAnswer.QuestionId = question.QuestionId;
+                            updateAnswer.Status = existingAnswer.Status;
+                            updateAnswer.CreatedBy = existingAnswer.CreatedBy;
+                            updateAnswer.CreatedTime = existingAnswer.CreatedTime;
+                            updateAnswer.UpdatedBy = user.FindFirstValue("Fullname");
+                            updateAnswer.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+                            _unitOfWork.Answer.Update(existingAnswer, updateAnswer);
+                        }
+                    }
+                }
+            }
+
+            if (!await SaveChangesAsync())
+                return ErrorResponse.Build(
                     message: StaticResponseMessage.Question.NotUpdated,
                     statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+
+            var resultQuestion = await _unitOfWork.Question
+                .GetAsync(q => q.QuestionId == question.QuestionId,
+                         includeProperties: "Answers");
+
+            return SuccessResponse.Build(
+                message: StaticResponseMessage.Question.Updated,
+                statusCode: StaticOperationStatus.StatusCode.Ok,
+                result: _mapper.Map<QuestionDto>(resultQuestion));
         }
         catch (Exception ex)
         {

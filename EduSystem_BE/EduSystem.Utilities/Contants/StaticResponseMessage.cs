@@ -113,5 +113,20 @@
             public const string Deleted = "Unit(s) deleted successfully";
             public const string NotDeleted = "Unit cannot delete";
         }
+
+        public static class Answer
+        {
+            public const string Created = "Answer(s) created successfully";
+            public const string NotCreated = "Answer(s) cannot create beacause: ";
+            public const string AlreadyExist = "Answer(s) already exist ";
+            public const string Updated = "Answer(s) updated successfully";
+            public const string NotUpdated = "Answer cannot update";
+            public const string NotFound = "Answer not found";
+            public const string Found = "Answer found";
+            public const string Retrieved = "Answer information retrieved successfully";
+            public const string NotRetrieved = "Answer information cannot retrieved";
+            public const string Deleted = "Answer(s) deleted successfully";
+            public const string NotDeleted = "Answer cannot delete";
+        }
     }
 }
