@@ -7,7 +7,6 @@ using EduSystem.Services.Helpers.Responses;
 using EduSystem.Services.IServices;
 using EduSystem.Utilities.Constants;
 using EduSystem.Utilities.Contants;
-using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 
 namespace EduSystem.Services.Services;

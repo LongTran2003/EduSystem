@@ -128,5 +128,20 @@
             public const string Deleted = "Answer(s) deleted successfully";
             public const string NotDeleted = "Answer cannot delete";
         }
+
+        public static class Matrix
+        {
+            public const string Created = "Matrix(s) created successfully";
+            public const string NotCreated = "Matrix(s) cannot create beacause: ";
+            public const string AlreadyExist = "Matrix(s) already exist ";
+            public const string Updated = "Matrix(s) updated successfully";
+            public const string NotUpdated = "Matrix cannot update";
+            public const string NotFound = "Matrix not found";
+            public const string Found = "Matrix found";
+            public const string Retrieved = "Matrix information retrieved successfully";
+            public const string NotRetrieved = "Matrix information cannot retrieved";
+            public const string Deleted = "Matrix(s) deleted successfully";
+            public const string NotDeleted = "Matrix cannot delete";
+        }
     }
 }

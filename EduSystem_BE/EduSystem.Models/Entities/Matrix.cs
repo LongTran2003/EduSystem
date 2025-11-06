@@ -24,12 +24,6 @@ namespace EduSystem.Models.Entities
 
         public string? Description { get; set; }
 
-        public string Status { get; set; } = StaticOperationStatus.BaseEntity.Active;
-
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        public DateTime? UpdatedAt { get; set; }
-
         // Navigation properties
         public virtual ICollection<MatrixDetail> MatrixDetails { get; set; } = new List<MatrixDetail>();
         public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
