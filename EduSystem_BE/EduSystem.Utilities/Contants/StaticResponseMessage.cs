@@ -15,6 +15,7 @@
             public const string NotUpdated = "Failed to update user";
             public const string NotRetrieved = "Failed to retrieve user(s)";
             public const string NotAuthorized = "User not authorized";
+            public const string UnAuthorized = "User not authorized for this function";
         }
 
         public static class Student
@@ -39,18 +40,18 @@
 
         }
         
-        public static class Subject
+        public static class LessonContent
         {
-            public const string Created = "Subject(s) created successfully";
-            public const string NotCreated = "Subject(s) cannot create beacause: ";
-            public const string Updated = "Subject updated successfully";
-            public const string NotUpdated = "Subject cannot update";
-            public const string NotFound = "No subject found";
-            public const string Found = "Subject found";
-            public const string Retrieved = "Subject information retrieved successfully";
-            public const string NotRetrieved = "Subject information cannot retrieved";
-            public const string Deleted = "Subject deleted successfully";
-            public const string NotDeleted = "Subject cannot delete";
+            public const string Created = "Lesson Content(s) created successfully";
+            public const string NotCreated = "Lesson Content(s) cannot create beacause: ";
+            public const string Updated = "Lesson Content updated successfully";
+            public const string NotUpdated = "Lesson Content cannot update";
+            public const string NotFound = "No Lesson Content found";
+            public const string Found = "Lesson Content found";
+            public const string Retrieved = "Lesson Content information retrieved successfully";
+            public const string NotRetrieved = "Lesson Content information cannot retrieved";
+            public const string Deleted = "Lesson Content deleted successfully";
+            public const string NotDeleted = "Lesson Content cannot delete";
 
         }
 

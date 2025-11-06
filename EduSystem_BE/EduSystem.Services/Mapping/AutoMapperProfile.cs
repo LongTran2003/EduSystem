@@ -5,6 +5,7 @@ using EduSystem.Models.DTO.Question;
 using EduSystem.Models.DTO.Quiz;
 using EduSystem.Models.DTO.Student;
 using EduSystem.Models.DTO.Unit;
+using EduSystem.Models.DTOs.LessonContent;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 
@@ -215,7 +216,37 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.OrderIndex, opt => opt.MapFrom(src => src.OrderIndex))
                 .ReverseMap();
             
+            // LessonContents to LessonContentDto
+            CreateMap<LessonContent, LessonContentDto>()
+                .ForMember(dest => dest.LessonContentId, opt => opt.MapFrom(src => src.LessonContentId))
+                .ForMember(dest => dest.LessonId, opt => opt.MapFrom(src => src.LessonId))
+                .ForMember(dest => dest.ResourceType, opt => opt.MapFrom(src => src.ResourceType))
+                .ForMember(dest => dest.ResourceUrl, opt => opt.MapFrom(src => src.ResourceUrl))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdatedTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();
             
+            CreateMap<LessonContent, CreateLessonContentDto>()
+                .ForMember(dest => dest.LessonId, opt => opt.MapFrom(src => src.LessonId))
+                .ForMember(dest => dest.ResourceType, opt => opt.MapFrom(src => src.ResourceType))
+                .ForMember(dest => dest.ResourceUrl, opt => opt.MapFrom(src => src.ResourceUrl))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ReverseMap();
+            
+            CreateMap<LessonContent, UpdateLessonContentDto>()
+                .ForMember(dest => dest.LessonContentId, opt => opt.MapFrom(src => src.LessonContentId))
+                .ForMember(dest => dest.LessonId, opt => opt.MapFrom(src => src.LessonId))
+                .ForMember(dest => dest.ResourceType, opt => opt.MapFrom(src => src.ResourceType))
+                .ForMember(dest => dest.ResourceUrl, opt => opt.MapFrom(src => src.ResourceUrl))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ReverseMap();
+
+
+
 
         }
     }
