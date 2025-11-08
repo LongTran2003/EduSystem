@@ -147,15 +147,19 @@ namespace EduSystem.Services.Services
                         Result = null
                     };
 
-                var customer = _mapper.Map<Student>(signUpStudentDto);
-                customer.UserId = newUser.Id;
+                var student = _mapper.Map<Student>(signUpStudentDto);
+                student.UserId = newUser.Id;
+
+                // Generate student code
+                string studentCode = await _unitOfWork.Student.GetNextStudentCodeAsync();
+                student.StudentCode = studentCode;
 
                 var isRoleExist = await _roleManager.RoleExistsAsync(StaticUserRoles.Student);
 
                 if (!isRoleExist) await _roleManager.CreateAsync(new IdentityRole(StaticUserRoles.Student));
 
 
-                // Thêm role "Customer" cho người dùng
+                // Thêm role "Student" cho người dùng
                 var isRoleAdded = await _userManager.AddToRoleAsync(newUser, StaticUserRoles.Student);
 
                 if (!isRoleAdded.Succeeded)
@@ -168,7 +172,7 @@ namespace EduSystem.Services.Services
                     };
 
                 // Lưu thay đổi vào cơ sở dữ liệu
-                await _unitOfWork.Student.AddAsync(customer);
+                await _unitOfWork.Student.AddAsync(student);
                 await _unitOfWork.SaveAsync();
 
                 await transaction.CommitAsync();
@@ -181,7 +185,8 @@ namespace EduSystem.Services.Services
                     Result = new
                     {
                         Email = newUser.Email,
-                        FullName = newUser.FullName
+                        FullName = newUser.FullName,
+                        StudentCode = student.StudentCode
                     }
                 };
             }

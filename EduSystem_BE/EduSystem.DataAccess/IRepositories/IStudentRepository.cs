@@ -14,5 +14,7 @@ namespace EduSystem.DataAccess.IRepositories
             bool isAdmin = false,
             string? includeProperties = null
         );
+
+        Task<string> GetNextStudentCodeAsync();
     }
 }

@@ -57,7 +57,8 @@ namespace EduSystem.DataAccess.Repositories
             {
                 foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    query = query.Include(property);
+                    if (property != nameof(ApplicationUser)) // Tránh include ApplicationUser 2 lần
+                        query = query.Include(property);
                 }
             }
 
@@ -86,6 +87,36 @@ namespace EduSystem.DataAccess.Repositories
                 .ToListAsync();
 
             return (students, totalStudents);
+        }
+
+        public async Task<string> GetNextStudentCodeAsync()
+        {
+            // Prefix "ENG" for English Education System
+            const string SYSTEM_PREFIX = "ENG";
+
+            // Get current academic year
+            int currentYear = DateTime.Now.Year;
+            string yearPrefix = $"{(currentYear % 100):D2}{((currentYear + 2) % 100):D2}";
+
+            // Complete prefix: ENG23250000 (ENG + YearStart + YearEnd + Sequential Number)
+            string completePrefix = $"{SYSTEM_PREFIX}{yearPrefix}";
+
+            var studentCodes = await _context.Students
+                .Where(s => s.StudentCode.StartsWith(completePrefix))
+                .Select(s => s.StudentCode)
+                .ToListAsync();
+
+            int maxNumber = studentCodes
+                .Select(code =>
+                {
+                    int number;
+                    return int.TryParse(code.Substring(7), out number) ? number : 0;
+                })
+                .DefaultIfEmpty(0)
+                .Max();
+
+            // Format: ENG23250001
+            return $"{completePrefix}{(maxNumber + 1):D4}";
         }
     }
 }
