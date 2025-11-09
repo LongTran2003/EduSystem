@@ -143,5 +143,20 @@
             public const string Deleted = "Matrix(s) deleted successfully";
             public const string NotDeleted = "Matrix cannot delete";
         }
+
+        public static class MatrixDetail
+        {
+            public const string Created = "MatrixDetail(s) created successfully";
+            public const string NotCreated = "MatrixDetail(s) cannot create beacause: ";
+            public const string AlreadyExist = "MatrixDetail(s) already exist ";
+            public const string Updated = "MatrixDetail(s) updated successfully";
+            public const string NotUpdated = "MatrixDetail cannot update";
+            public const string NotFound = "MatrixDetail not found";
+            public const string Found = "MatrixDetail found";
+            public const string Retrieved = "MatrixDetail information retrieved successfully";
+            public const string NotRetrieved = "MatrixDetail information cannot retrieved";
+            public const string Deleted = "MatrixDetail(s) deleted successfully";
+            public const string NotDeleted = "MatrixDetail cannot delete";
+        }
     }
 }

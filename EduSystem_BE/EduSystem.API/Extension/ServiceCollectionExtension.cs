@@ -41,7 +41,8 @@ namespace EduSystem.API.Extension
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ILessonContentService, LessonContentService>();
             services.AddScoped<IAnswerService, AnswerService>();
-
+            services.AddScoped<IMatrixService, MatrixService>();
+            services.AddScoped<IMatrixDetailService, MatrixDetailService>();
 
 
             return services;

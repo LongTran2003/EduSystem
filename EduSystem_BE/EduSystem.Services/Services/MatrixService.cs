@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using EduSystem.DataAccess.IRepositories;
 using EduSystem.Models.DTO;
-using EduSystem.Models.DTO.Question;
 using EduSystem.Models.DTO.Unit;
 using EduSystem.Models.DTOs.Matrix;
 using EduSystem.Models.Entities;
 using EduSystem.Services.Helpers.Responses;
+using EduSystem.Services.IServices;
 using EduSystem.Utilities.Constants;
 using EduSystem.Utilities.Contants;
 using System.Security.Claims;
 
 namespace EduSystem.Services.Services
 {
-    public class MatrixService
+    public class MatrixService : IMatrixService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;

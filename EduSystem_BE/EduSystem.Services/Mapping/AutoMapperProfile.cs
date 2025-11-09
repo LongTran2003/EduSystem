@@ -8,6 +8,7 @@ using EduSystem.Models.DTO.Unit;
 using EduSystem.Models.DTOs.Answer;
 using EduSystem.Models.DTOs.LessonContent;
 using EduSystem.Models.DTOs.Matrix;
+using EduSystem.Models.DTOs.MatrixDetail;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 using EduSystem.Utilities.Contants;
@@ -308,7 +309,39 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ReverseMap();
 
+            // MatrixDetail to MatrixDetailDto
+            CreateMap<MatrixDetail, MatrixDetailDto>()
+                .ForMember(dest => dest.DetailId, opt => opt.MapFrom(src => src.DetailId))
+                .ForMember(dest => dest.MatrixId, opt => opt.MapFrom(src => src.MatrixId))
+                .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.QuestionType))
+                .ForMember(dest => dest.SkillType, opt => opt.MapFrom(src => src.SkillType))
+                .ForMember(dest => dest.QuestionCount, opt => opt.MapFrom(src => src.QuestionCount))
+                .ForMember(dest => dest.ScorePerQuestion, opt => opt.MapFrom(src => src.ScorePerQuestion))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdatedTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();  
 
+            CreateMap<MatrixDetail, CreateMatrixDetailDto>()
+                .ForMember(dest => dest.MatrixId, opt => opt.MapFrom(src => src.MatrixId))
+                .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.QuestionType))
+                .ForMember(dest => dest.SkillType, opt => opt.MapFrom(src => src.SkillType))
+                .ForMember(dest => dest.QuestionCount, opt => opt.MapFrom(src => src.QuestionCount))
+                .ForMember(dest => dest.ScorePerQuestion, opt => opt.MapFrom(src => src.ScorePerQuestion))
+                .ReverseMap();
+
+            CreateMap<MatrixDetail, UpdateMatrixDetailDto>()
+                .ForMember(dest => dest.DetailId, opt => opt.MapFrom(src => src.DetailId))
+                .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.QuestionType))
+                .ForMember(dest => dest.SkillType, opt => opt.MapFrom(src => src.SkillType))
+                .ForMember(dest => dest.QuestionCount, opt => opt.MapFrom(src => src.QuestionCount))
+                .ForMember(dest => dest.ScorePerQuestion, opt => opt.MapFrom(src => src.ScorePerQuestion))
+                .ReverseMap();
         }
     }
 }

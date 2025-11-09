@@ -12,7 +12,7 @@ namespace EduSystem.Models.Entities
         public string UserId { get; set; } = null!;
         [ForeignKey("UserId")] public virtual ApplicationUser ApplicationUser { get; set; } = null!;
 
-        [StringLength(10)]
+        [StringLength(11)]
         public string StudentCode { get; set; } = null!;
 
         public StudentStatus Status { get; set; } = StudentStatus.Active;
