@@ -20,8 +20,8 @@ namespace EduSystem.Models.Entities
         [StringLength(100)]
         public string? Grade { get; set; } // Khối lớp, ví dụ: Khối 10, Khối 11, v.v.
 
-        [StringLength(100)]
-        public string? School { get; set; } // Trường học
+        [StringLength(10)]
+        public string? Class { get; set; } // Lớp mấy
 
         // Thêm các thuộc tính ICollection dưới đây
         public virtual ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();

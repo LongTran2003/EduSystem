@@ -44,7 +44,7 @@ namespace EduSystem.DataAccess.Repositories
                     "phonenumber" => query.Where(s => s.ApplicationUser.PhoneNumber != null && s.ApplicationUser.PhoneNumber.Contains(filterQuery)),
                     "studentcode" => query.Where(s => s.StudentCode.Contains(filterQuery)),
                     "grade" => query.Where(s => s.Grade != null && s.Grade.Contains(filterQuery)),
-                    "school" => query.Where(s => s.School != null && s.School.Contains(filterQuery)),
+                    "school" => query.Where(s => s.Class != null && s.Class.Contains(filterQuery)),
                     "status" => Enum.TryParse<StudentStatus>(filterQuery, true, out var status)
                         ? query.Where(s => s.Status == status)
                         : query,
@@ -75,7 +75,9 @@ namespace EduSystem.DataAccess.Repositories
                 "studentcode" => query.OrderBy(s => s.StudentCode),
                 "studentcode_desc" => query.OrderByDescending(s => s.StudentCode),
                 "grade" => query.OrderBy(s => s.Grade),
-                "school" => query.OrderBy(s => s.School),
+                "grade_decs" => query.OrderByDescending(s => s.Grade),
+                "class" => query.OrderBy(s => s.Class),
+                "class_decs" => query.OrderByDescending(s => s.Class),
                 "status" => query.OrderBy(s => s.Status),
                 "status_desc" => query.OrderByDescending(s => s.Status),
                 _ => query.OrderBy(s => s.ApplicationUser.FullName)

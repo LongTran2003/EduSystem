@@ -158,5 +158,19 @@
             public const string Deleted = "MatrixDetail(s) deleted successfully";
             public const string NotDeleted = "MatrixDetail cannot delete";
         }
+        public static class QuizAttempt
+        {
+            public const string Created = "QuizAttempt(s) created successfully";
+            public const string NotCreated = "QuizAttempt(s) cannot create beacause: ";
+            public const string AlreadyExist = "QuizAttempt(s) already exist ";
+            public const string Updated = "QuizAttempt(s) updated successfully";
+            public const string NotUpdated = "QuizAttempt cannot update";
+            public const string NotFound = "QuizAttempt not found";
+            public const string Found = "QuizAttempt found";
+            public const string Retrieved = "QuizAttempt information retrieved successfully";
+            public const string NotRetrieved = "QuizAttempt information cannot retrieved";
+            public const string Deleted = "QuizAttempt(s) deleted successfully";
+            public const string NotDeleted = "QuizAttempt cannot delete";
+        }
     }
 }

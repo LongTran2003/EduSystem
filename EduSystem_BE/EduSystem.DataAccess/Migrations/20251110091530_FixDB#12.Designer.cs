@@ -3,6 +3,7 @@ using System;
 using EduSystem.DataAccess.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduSystem.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251110091530_FixDB#12")]
+    partial class FixDB12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,7 +167,7 @@ namespace EduSystem.DataAccess.Migrations
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
                             BirthDate = new DateTime(2001, 6, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ConcurrencyStamp = "78ad7190-d0a6-4896-a248-a5b3aeddf778",
+                            ConcurrencyStamp = "a9991b27-b511-47c3-9177-1f0de393249a",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Admin",
@@ -172,14 +175,71 @@ namespace EduSystem.DataAccess.Migrations
                             LockoutEnabled = true,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJa9sl3bpea1IjBWZ6AG/5QOSFtztNnjISe4b3Do0KcegiYExryH7t4L5zv3TEgSDw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJQlXwFde/ZbRep6wh70YnJ8wjgRo6umTY3d6E+EOjbMpC4PkulA9B9qKd127D9Y+w==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "4770979e-1895-4a67-b9c9-a5cb0068c66f",
+                            SecurityStamp = "04dba7cb-a5b9-4176-be30-efe30b24a100",
                             Status = "Active",
                             TwoFactorEnabled = false,
                             UserName = "admin@gmail.com"
                         });
+                });
+
+            modelBuilder.Entity("EduSystem.Models.Entities.Class", b =>
+                {
+                    b.Property<Guid>("ClassId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MaxStudents")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SchoolLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SchoolYear")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TeacherId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ClassId");
+
+                    b.HasIndex("ClassName");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("EduSystem.Models.Entities.Lesson", b =>
@@ -239,6 +299,9 @@ namespace EduSystem.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AIPrompt")
+                        .HasColumnType("text");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
@@ -248,8 +311,14 @@ namespace EduSystem.DataAccess.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsAIGenerated")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("LessonId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ResourceType")
                         .HasMaxLength(50)
@@ -376,6 +445,9 @@ namespace EduSystem.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AIPrompt")
+                        .HasColumnType("text");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
@@ -386,9 +458,15 @@ namespace EduSystem.DataAccess.Migrations
                     b.Property<DateTime?>("CreatedTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("DifficultyLevel")
+                        .HasColumnType("integer");
+
                     b.Property<string>("EnglishLevel")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<bool>("IsAIGenerated")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Level")
                         .IsRequired()
@@ -438,6 +516,9 @@ namespace EduSystem.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ClassId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
@@ -453,6 +534,9 @@ namespace EduSystem.DataAccess.Migrations
                     b.Property<string>("EnglishLevel")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid>("MatrixId")
                         .HasColumnType("uuid");
@@ -483,6 +567,8 @@ namespace EduSystem.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("QuizId");
+
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("MatrixId");
 
@@ -554,6 +640,15 @@ namespace EduSystem.DataAccess.Migrations
                     b.Property<DateTime?>("CreatedTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("QuizQuestionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(5,2)");
+
                     b.Property<string>("Status")
                         .HasColumnType("text");
 
@@ -576,13 +671,17 @@ namespace EduSystem.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ClassId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Grade")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<string>("School")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
+
+                    b.Property<int>("SchoolLevel")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -597,6 +696,8 @@ namespace EduSystem.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("StudentId");
+
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("UserId");
 
@@ -650,29 +751,104 @@ namespace EduSystem.DataAccess.Migrations
                     b.ToTable("StudentAnswers");
                 });
 
-            modelBuilder.Entity("EduSystem.Models.Entities.StudentProgress", b =>
+            modelBuilder.Entity("EduSystem.Models.Entities.StudentClass", b =>
                 {
+                    b.Property<Guid>("StudentClassId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EnrolledDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("LessonId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CompletionStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("LastAccessDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Notes")
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<int>("TimeSpent")
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("StudentClassId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("StudentId", "ClassId")
+                        .IsUnique();
+
+                    b.ToTable("StudentClasses");
+                });
+
+            modelBuilder.Entity("EduSystem.Models.Entities.StudentProgress", b =>
+                {
+                    b.Property<Guid>("ProgressId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("AverageScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("CompletedLessons")
                         .HasColumnType("integer");
 
-                    b.HasKey("StudentId", "LessonId");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastAccessDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LessonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ProgressPercentage")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("TotalLessons")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TotalTimeSpent")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UnitId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProgressId");
 
                     b.HasIndex("LessonId");
+
+                    b.HasIndex("UnitId");
+
+                    b.HasIndex("StudentId", "UnitId");
 
                     b.ToTable("StudentProgresses");
                 });
@@ -683,12 +859,9 @@ namespace EduSystem.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal?>("Rating")
-                        .HasColumnType("decimal(3,2)");
-
-                    b.Property<string>("Specialization")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                    b.Property<string>("Bio")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -921,6 +1094,17 @@ namespace EduSystem.DataAccess.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("EduSystem.Models.Entities.Class", b =>
+                {
+                    b.HasOne("EduSystem.Models.Entities.Teacher", "Teacher")
+                        .WithMany("Classes")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("EduSystem.Models.Entities.Lesson", b =>
                 {
                     b.HasOne("EduSystem.Models.Entities.Unit", "Unit")
@@ -978,6 +1162,11 @@ namespace EduSystem.DataAccess.Migrations
 
             modelBuilder.Entity("EduSystem.Models.Entities.Quiz", b =>
                 {
+                    b.HasOne("EduSystem.Models.Entities.Class", "Class")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("EduSystem.Models.Entities.Matrix", "Matrix")
                         .WithMany("Quizzes")
                         .HasForeignKey("MatrixId")
@@ -987,8 +1176,10 @@ namespace EduSystem.DataAccess.Migrations
                     b.HasOne("EduSystem.Models.Entities.Teacher", "Teacher")
                         .WithMany("Quizzes")
                         .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Class");
 
                     b.Navigation("Matrix");
 
@@ -1000,13 +1191,13 @@ namespace EduSystem.DataAccess.Migrations
                     b.HasOne("EduSystem.Models.Entities.Quiz", "Quiz")
                         .WithMany("QuizAttempts")
                         .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EduSystem.Models.Entities.Student", "Student")
                         .WithMany("QuizAttempts")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Quiz");
@@ -1035,6 +1226,10 @@ namespace EduSystem.DataAccess.Migrations
 
             modelBuilder.Entity("EduSystem.Models.Entities.Student", b =>
                 {
+                    b.HasOne("EduSystem.Models.Entities.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId");
+
                     b.HasOne("EduSystem.Models.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -1042,6 +1237,8 @@ namespace EduSystem.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("Class");
                 });
 
             modelBuilder.Entity("EduSystem.Models.Entities.StudentAnswer", b =>
@@ -1069,23 +1266,46 @@ namespace EduSystem.DataAccess.Migrations
                     b.Navigation("QuizAttempt");
                 });
 
+            modelBuilder.Entity("EduSystem.Models.Entities.StudentClass", b =>
+                {
+                    b.HasOne("EduSystem.Models.Entities.Class", "Class")
+                        .WithMany("StudentClasses")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EduSystem.Models.Entities.Student", "Student")
+                        .WithMany("StudentClasses")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("EduSystem.Models.Entities.StudentProgress", b =>
                 {
-                    b.HasOne("EduSystem.Models.Entities.Lesson", "Lesson")
+                    b.HasOne("EduSystem.Models.Entities.Lesson", null)
                         .WithMany("StudentProgresses")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LessonId");
 
                     b.HasOne("EduSystem.Models.Entities.Student", "Student")
                         .WithMany("StudentProgresses")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Lesson");
+                    b.HasOne("EduSystem.Models.Entities.Unit", "Unit")
+                        .WithMany()
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Student");
+
+                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("EduSystem.Models.Entities.Teacher", b =>
@@ -1166,6 +1386,13 @@ namespace EduSystem.DataAccess.Migrations
                     b.Navigation("StudentAnswers");
                 });
 
+            modelBuilder.Entity("EduSystem.Models.Entities.Class", b =>
+                {
+                    b.Navigation("Quizzes");
+
+                    b.Navigation("StudentClasses");
+                });
+
             modelBuilder.Entity("EduSystem.Models.Entities.Lesson", b =>
                 {
                     b.Navigation("LessonContents");
@@ -1205,11 +1432,15 @@ namespace EduSystem.DataAccess.Migrations
                 {
                     b.Navigation("QuizAttempts");
 
+                    b.Navigation("StudentClasses");
+
                     b.Navigation("StudentProgresses");
                 });
 
             modelBuilder.Entity("EduSystem.Models.Entities.Teacher", b =>
                 {
+                    b.Navigation("Classes");
+
                     b.Navigation("Matrices");
 
                     b.Navigation("Questions");
