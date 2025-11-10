@@ -172,5 +172,19 @@
             public const string Deleted = "QuizAttempt(s) deleted successfully";
             public const string NotDeleted = "QuizAttempt cannot delete";
         }
+
+        public static class StudentAnswer
+        {
+            public const string Created = "Student answer created successfully";
+            public const string NotCreated = "Failed to create student answer: ";
+            public const string Updated = "Student answer updated successfully";
+            public const string NotUpdated = "Failed to update student answer";
+            public const string Deleted = "Student answer deleted successfully";
+            public const string NotDeleted = "Failed to delete student answer";
+            public const string Retrieved = "Student answers retrieved successfully";
+            public const string NotRetrieved = "Failed to retrieve student answers: ";
+            public const string Found = "Student answers found";
+            public const string NotFound = "Student answer not found";
+        }
     }
 }

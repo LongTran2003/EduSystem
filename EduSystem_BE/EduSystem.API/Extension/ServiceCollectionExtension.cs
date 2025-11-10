@@ -44,6 +44,7 @@ namespace EduSystem.API.Extension
             services.AddScoped<IMatrixService, MatrixService>();
             services.AddScoped<IMatrixDetailService, MatrixDetailService>();
             services.AddScoped<IQuizAttemptService, QuizAttemptService>();
+            services.AddScoped<IStudentAnswerService, StudentAnswerService>();
 
 
             return services;
