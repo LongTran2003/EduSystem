@@ -201,5 +201,20 @@
             public const string Deleted = "QuizQuestion(s) deleted successfully";
             public const string NotDeleted = "QuizQuestion cannot delete";
         }
+
+        public static class StudentProgress
+        {
+            public const string Created = "StudentProgress(s) created successfully";
+            public const string NotCreated = "StudentProgress(s) cannot create beacause: ";
+            public const string AlreadyExist = "StudentProgress(s) already exist ";
+            public const string Updated = "StudentProgress(s) updated successfully";
+            public const string NotUpdated = "StudentProgress cannot update";
+            public const string NotFound = "StudentProgress not found";
+            public const string Found = "StudentProgress found";
+            public const string Retrieved = "StudentProgress information retrieved successfully";
+            public const string NotRetrieved = "StudentProgress information cannot retrieved";
+            public const string Deleted = "StudentProgress(s) deleted successfully";
+            public const string NotDeleted = "StudentProgress cannot delete";
+        }
     }
 }

@@ -11,6 +11,7 @@ using EduSystem.Models.DTOs.Matrix;
 using EduSystem.Models.DTOs.MatrixDetail;
 using EduSystem.Models.DTOs.QuizQuestion;
 using EduSystem.Models.DTOs.StudentAnswers;
+using EduSystem.Models.DTOs.StudentProgresses;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
 using EduSystem.Utilities.Contants;
@@ -412,6 +413,47 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
                 .ForMember(dest => dest.QuestionIds, opt => opt.Ignore())
                 .ReverseMap();
+
+            // StudentProgress to StudentProgressDto
+            CreateMap<StudentProgress, StudentProgressDto>()
+                .ForMember(dest => dest.ProgressId, opt => opt.MapFrom(src => src.ProgressId))
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.StudentId))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.ApplicationUser.FullName))
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.UnitId))
+                .ForMember(dest => dest.UnitName, opt => opt.MapFrom(src => src.Unit.UnitName))
+                .ForMember(dest => dest.CompletedLessons, opt => opt.MapFrom(src => src.CompletedLessons))
+                .ForMember(dest => dest.TotalLessons, opt => opt.MapFrom(src => src.TotalLessons))
+                .ForMember(dest => dest.ProgressPercentage, opt => opt.MapFrom(src => 
+                    src.TotalLessons == 0 ? 0 : (decimal)src.CompletedLessons / src.TotalLessons * 100))
+                .ForMember(dest => dest.AverageScore, opt => opt.MapFrom(src => src.AverageScore))
+                .ForMember(dest => dest.TotalTimeSpent, opt => opt.MapFrom(src => src.TotalTimeSpent))
+                .ForMember(dest => dest.LastAccessDate, opt => opt.MapFrom(src => src.LastAccessDate))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdatedTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();
+
+            CreateMap<StudentProgress, CreateStudentProgressDto>()
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.StudentId))
+                .ForMember(dest => dest.UnitId, opt => opt.MapFrom(src => src.UnitId))
+                .ForMember(dest => dest.CompletedLessons, opt => opt.MapFrom(src => src.CompletedLessons))
+                .ForMember(dest => dest.TotalLessons, opt => opt.MapFrom(src => src.TotalLessons))
+                .ForMember(dest => dest.AverageScore, opt => opt.MapFrom(src => src.AverageScore))
+                .ForMember(dest => dest.TotalTimeSpent, opt => opt.MapFrom(src => src.TotalTimeSpent))
+                .ReverseMap();
+
+            CreateMap<StudentProgress, UpdateStudentProgressDto>()
+                .ForMember(dest => dest.ProgressId, opt => opt.MapFrom(src => src.ProgressId))
+                .ForMember(dest => dest.CompletedLessons, opt => opt.MapFrom(src => src.CompletedLessons))
+                .ForMember(dest => dest.TotalLessons, opt => opt.MapFrom(src => src.TotalLessons))
+                .ForMember(dest => dest.AverageScore, opt => opt.MapFrom(src => src.AverageScore))
+                .ForMember(dest => dest.TotalTimeSpent, opt => opt.MapFrom(src => src.TotalTimeSpent))
+                .ReverseMap();
+
+            CreateMap<StudentProgress, UpdateProgressDto>();
+
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EduSystem.Models.Entities
 {
-    public class StudentProgress
+    public class StudentProgress : BaseEntity<string, string, string>
     {
         [Key]
         public Guid ProgressId { get; set; }
