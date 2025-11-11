@@ -56,7 +56,7 @@ public class QuestionController : ControllerBase
     [HttpGet("get/teacher/all")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Get questions created by current teacher", Description = "Requires Teacher role")]
-    public async Task<IActionResult> GetMyQuestions(
+    public async Task<IActionResult> GetQuestionsByCurrentTeacher(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] string? filterOn = null,
