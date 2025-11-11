@@ -3,11 +3,13 @@ using EduSystem.Models.DTOs.StudentProgresses;
 using EduSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EduSystem.API.Controllers
 {
     [ApiController]
-    [Route("api/student-progress")]
+    [Route("api/student-progresses")]
+    [SwaggerTag("Student Progress Management APIs")]
 
     public class StudentProgressController : ControllerBase
     {
@@ -20,6 +22,7 @@ namespace EduSystem.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "TEACHER,ADMIN")]
+        [SwaggerOperation(Summary = "Create a new student progress record", Description = "Requires Teacher or Admin role")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -33,7 +36,9 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPut]
+        [HttpPut("{progressId:guid}")]
+        [Authorize(Roles = "TEACHER,ADMIN")]
+        [SwaggerOperation(Summary = "Update student progress by ID", Description = "Requires Teacher or Admin role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -48,8 +53,9 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPut("complete-lesson")]
+        [HttpPut("{progressId:guid}/complete-lesson")]
         [Authorize(Roles = "STUDENT")]
+        [SwaggerOperation(Summary = "Mark lesson as completed", Description = "Student only")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -64,7 +70,8 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{progressId}")]
+        [HttpGet("{progressId:guid}")]
+        [SwaggerOperation(Summary = "Get student progress by ID", Description = "Requires authentication")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -75,7 +82,8 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("student/{studentId}")]
+        [HttpGet("student/{studentId:guid}")]
+        [SwaggerOperation(Summary = "Get all progress records for a student", Description = "Requires Teacher or Admin role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -85,8 +93,9 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("unit/{unitId}")]
+        [HttpGet("unit/{unitId:guid}")]
         [Authorize(Roles = "TEACHER,ADMIN")]
+        [SwaggerOperation(Summary = "Get all progress records for a unit", Description = "Requires Teacher or Admin role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -98,6 +107,7 @@ namespace EduSystem.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "TEACHER,ADMIN")]
+        [SwaggerOperation(Summary = "Get all student progress records with pagination and filtering", Description = "Requires Teacher or Admin role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -112,8 +122,9 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpDelete("{progressId}")]
-        [Authorize(Roles = "ADMIN")]
+        [HttpDelete("{progressId:guid}")]
+        [Authorize(Roles = "TEACHER,ADMIN")]
+        [SwaggerOperation(Summary = "Delete student progress by ID", Description = "Requires Teacher or Admin role")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

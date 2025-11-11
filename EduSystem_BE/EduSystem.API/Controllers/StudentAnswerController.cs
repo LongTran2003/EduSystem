@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EduSystem.API.Controllers
 {
     [ApiController]
-    [Route("api/student-answer")]
+    [Route("api/student-answers")]
+    [SwaggerTag("Student Answer Management APIs")]
 
     public class StudentAnswerController : ControllerBase
     {
@@ -28,7 +29,7 @@ namespace EduSystem.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPost("submit-answers")]
+        [HttpPost("submit")]
         [Authorize(Roles = "STUDENT")]
         [SwaggerOperation(Summary = "Submit multiple answers at once", Description = "Batch submission for student")]
         public async Task<IActionResult> SubmitAnswers([FromBody] SubmitAnswersDto submitAnswersDto)
@@ -37,24 +38,24 @@ namespace EduSystem.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPut]
-        [SwaggerOperation(Summary = "Update student answer", Description = "Student can update their own, Admin can update all")]
+        [HttpPut("{attemptId:guid}/question/{questionId:guid}")]
+        [SwaggerOperation(Summary = "Update a student answer", Description = "Student can update their own, Admin can update all")]
         public async Task<IActionResult> UpdateStudentAnswer([FromBody] UpdateStudentAnswerDto updateStudentAnswerDto)
         {
             var result = await _studentAnswerService.UpdateStudentAnswer(User, updateStudentAnswerDto);
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPut("grade")]
+        [HttpPut("{attemptId:guid}/question/{questionId:guid}/grade")]
         [Authorize(Roles = "TEACHER,ADMIN")]
-        [SwaggerOperation(Summary = "Grade student answer", Description = "Teacher/Admin only")]
+        [SwaggerOperation(Summary = "Grade a student answer", Description = "Teacher/Admin only")]
         public async Task<IActionResult> GradeAnswer([FromBody] UpdateStudentAnswerDto gradeDto)
         {
             var result = await _studentAnswerService.GradeAnswer(User, gradeDto);
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("attempt/{attemptId:guid}/question/{questionId:guid}")]
+        [HttpGet("{attemptId:guid}/question/{questionId:guid}")]
         [SwaggerOperation(Summary = "Get specific student answer by attempt and question ID")]
         public async Task<IActionResult> GetStudentAnswerById(
             [FromRoute] Guid attemptId,
@@ -87,8 +88,8 @@ namespace EduSystem.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpDelete("attempt/{attemptId:guid}/question/{questionId:guid}")]
-        [SwaggerOperation(Summary = "Delete student answer", Description = "Student can delete their own, Admin can delete all")]
+        [HttpDelete("{attemptId:guid}/question/{questionId:guid}")]
+        [SwaggerOperation(Summary = "Delete a student answer", Description = "Student can delete their own, Admin can delete all")]
         public async Task<IActionResult> DeleteStudentAnswer(
             [FromRoute] Guid attemptId,
             [FromRoute] Guid questionId)

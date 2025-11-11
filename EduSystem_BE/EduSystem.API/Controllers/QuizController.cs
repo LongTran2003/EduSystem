@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EduSystem.API.Controllers;
 
 [ApiController]
-[Route("api/quiz")]
+[Route("api/quizzes")]
+[SwaggerTag("Quiz Management APIs")]
 
 public class QuizController : ControllerBase
 {
@@ -18,10 +19,10 @@ public class QuizController : ControllerBase
     {
         _quizService = quizService;
     }
-    
-    [HttpPost("create")]
+
+    [HttpPost]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Creates a new quiz", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Create a new quiz", Description = "Requires Teacher role")]
     public async Task<IActionResult> CreateQuiz([FromBody] CreateQuizDto createQuizDto)
     {
         if (!ModelState.IsValid)
@@ -37,9 +38,9 @@ public class QuizController : ControllerBase
         var response = await _quizService.CreateQuiz(User, createQuizDto);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpGet("get/all")]
-    [SwaggerOperation(Summary = "Get all quizzes", Description = "Requires authentication")]
+
+    [HttpGet]
+    [SwaggerOperation(Summary = "Get all quizzes", Description = "Supports pagination, filtering, and sorting")]
     public async Task<IActionResult> GetAllQuizzes(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -52,17 +53,17 @@ public class QuizController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/{quizId:guid}")]
-    [SwaggerOperation(Summary = "Get quiz detail", Description = "Requires authentication")]
+    [HttpGet("{quizId:guid}")]
+    [SwaggerOperation(Summary = "Get quiz detail by ID", Description = "Fetches a specific quiz by its ID")]
     public async Task<IActionResult> GetQuizDetail(Guid quizId)
     {
         var response = await _quizService.GetQuizById(User, quizId);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpPut("update")]
+
+    [HttpPut("{quizId:guid}")]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Update quiz", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Update an existing quiz", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateQuiz([FromBody] UpdateQuizDto updateQuizDto)
     {
         if (!ModelState.IsValid)
@@ -73,10 +74,10 @@ public class QuizController : ControllerBase
         var response = await _quizService.UpdateQuiz(User, updateQuizDto);
         return StatusCode(response.StatusCode, response);
     }
-    
+
     [HttpDelete("{quizId:guid}")]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Delete quiz (soft delete)", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Delete a quiz (soft delete)", Description = "Requires Teacher role")]
     public async Task<IActionResult>? DeleteQuiz([FromRoute] Guid quizId)
     {
         var response = await _quizService.DeleteQuiz(User, quizId);

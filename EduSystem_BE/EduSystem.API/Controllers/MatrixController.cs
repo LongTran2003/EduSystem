@@ -2,11 +2,13 @@
 using EduSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EduSystem.API.Controllers
 {
     [ApiController]
-    [Route("api/matrix")]
+    [Route("api/matrices")]
+    [SwaggerTag("Matrix Management APIs")]
 
     public class MatrixController : ControllerBase
     {
@@ -17,23 +19,26 @@ namespace EduSystem.API.Controllers
             _matrixService = matrixService;
         }
 
-        [HttpPost("create")]
+        [HttpPost()]
         [Authorize(Roles = "ADMIN,TEACHER")]
+        [SwaggerOperation(Summary = "Create a new matrix", Description = "Requires ADMIN or TEACHER role")]
         public async Task<IActionResult> CreateMatrix([FromBody] CreateMatrixDto createMatrixDto)
         {
             var result = await _matrixService.CreateMatrix(User, createMatrixDto);
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPut("update")]
+        [HttpPut("{matrixId:guid}")]
         [Authorize(Roles = "TEACHER")]
+        [SwaggerOperation(Summary = "Update an existing matrix", Description = "Requires TEACHER role")]
         public async Task<IActionResult> UpdateMatrix([FromBody] UpdateMatrixDto updateMatrixDto)
         {
             var result = await _matrixService.UpdateMatrix(User, updateMatrixDto);
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("get/all")]
+        [HttpGet()]
+        [SwaggerOperation(Summary = "Get all matrices", Description = "Supports pagination, filtering, and sorting")]
         public async Task<IActionResult> GetAllMatrices(
             [FromQuery] int pageNumber = 1, 
             [FromQuery] int pageSize = 10, 
@@ -45,15 +50,17 @@ namespace EduSystem.API.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("get/{matrixId:guid}")]
+        [HttpGet("{matrixId:guid}")]
+        [SwaggerOperation(Summary = "Get matrix by ID", Description = "Fetches a specific matrix by its ID")]
         public async Task<IActionResult> GetMatrixById(Guid matrixId)
         {
             var result = await _matrixService.GetMatrixById(User, matrixId);
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpDelete("delete/{matrixId:guid}")]
-        [Authorize(Roles = "ADMIN, TEACHER")]
+        [HttpDelete("{matrixId:guid}")]
+        [Authorize(Roles = "ADMIN,TEACHER")]
+        [SwaggerOperation(Summary = "Delete a matrix", Description = "Requires ADMIN or TEACHER role")]
         public async Task<IActionResult> DeleteMatrix(Guid id)
         {
             var result = await _matrixService.DeleteMatrix(User, id);

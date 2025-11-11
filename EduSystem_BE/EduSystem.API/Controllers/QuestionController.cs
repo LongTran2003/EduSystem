@@ -9,7 +9,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EduSystem.API.Controllers;
 
 [ApiController]
-[Route("api/question")]
+[Route("api/questions")]
+[SwaggerTag("Question Management APIs")]
 
 public class QuestionController : ControllerBase
 {
@@ -19,10 +20,11 @@ public class QuestionController : ControllerBase
     {
         _questionService = questionService;
     }
-    
-    [HttpPost("create")]
+
+    [HttpPost]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Creates a new question", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Create a new question", Description = "Requires Teacher role")]
+
     public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionDto createQuestionDto)
     {
         if (!ModelState.IsValid)
@@ -38,9 +40,10 @@ public class QuestionController : ControllerBase
         var response = await _questionService.CreateQuestion(User, createQuestionDto);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpGet("get/all")]
-    [SwaggerOperation(Summary = "Get all questions", Description = "Requires authentication")]
+
+    [HttpGet]
+    [SwaggerOperation(Summary = "Get all questions", Description = "Supports pagination, filtering, and sorting")]
+
     public async Task<IActionResult> GetAllQuestions(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -53,7 +56,7 @@ public class QuestionController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/teacher/all")]
+    [HttpGet("by-teacher")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Get questions created by current teacher", Description = "Requires Teacher role")]
     public async Task<IActionResult> GetQuestionsByCurrentTeacher(
@@ -68,17 +71,17 @@ public class QuestionController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/{questionId:guid}")]
-    [SwaggerOperation(Summary = "Get a question's detail", Description = "Requires authentication")]
+    [HttpGet("{questionId:guid}")]
+    [SwaggerOperation(Summary = "Get question by ID", Description = "Fetches a specific question by its ID")]
     public async Task<IActionResult> GetQuestionById(Guid questionId)
     {
         var response = await _questionService.GetQuestionById(User, questionId);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpPut("update")]
+
+    [HttpPut("{questionId:guid}")]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Update question", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Update an existing question", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateQuestion([FromBody] UpdateQuestionDto updateQuestionDto)
     {
         if (!ModelState.IsValid)
@@ -89,10 +92,10 @@ public class QuestionController : ControllerBase
         var response = await _questionService.UpdateQuestion(User, updateQuestionDto);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpDelete("delete/{questionId:guid}")]
+
+    [HttpDelete("{questionId:guid}")]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Delete question (soft delete)", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Delete a question (soft delete)", Description = "Requires Teacher role")]
     public async Task<IActionResult>? DeleteQuestion([FromRoute] Guid questionId)
     {
         var response = await _questionService.DeleteQuestion(User, questionId);

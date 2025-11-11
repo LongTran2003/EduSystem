@@ -7,7 +7,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EduSystem.API.Controllers
 {
     [ApiController]
-    [Route("api/teacher")]
+    [Route("api/teachers")]
+    [SwaggerTag("Teacher Management APIs")]
 
     public class TeacherController : ControllerBase
     {
@@ -19,8 +20,8 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpGet]
-        //[Authorize(Roles = "ADMIN")]
-        [SwaggerOperation(Summary = "API get all teachers's account", Description = "Requires Admin")]
+        [Authorize(Roles = "ADMIN")]
+        [SwaggerOperation(Summary = "Get all teachers' accounts", Description = "Requires Admin role")]
         public async Task<IActionResult> GetAllTeachers(
             [FromQuery] int pageNumber = 1,
             int pageSize = 10,
@@ -33,9 +34,9 @@ namespace EduSystem.API.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("get-student-by-phone/{phoneNumber}")]
-        [Authorize(Roles = "ADMIN, TEACHER")]
-        [SwaggerOperation(Summary = "API get teacher's account by phone number", Description = "Requires Admin or Teacher")]
+        [HttpGet("get-by-phone/{phoneNumber}")]
+        [Authorize(Roles = "ADMIN,TEACHER")]
+        [SwaggerOperation(Summary = "Get teacher account by phone number", Description = "Requires Admin or Teacher role")]
         public async Task<IActionResult> GetStudentByPhoneNumber([FromRoute] string phoneNumber)
         {
             var response = await _teacherService.GetTeacherInfoByPhoneNumber(User, phoneNumber);
@@ -44,17 +45,17 @@ namespace EduSystem.API.Controllers
 
         [HttpGet("{teacherId:guid}")]
         [Authorize(Roles = "ADMIN")]
-        [SwaggerOperation(Summary = "API gets all teacher's account by id", Description = "Requires admin roles")]
-        public async Task<IActionResult> GetStudentDetailsById(Guid studentId)
+        [SwaggerOperation(Summary = "Get teacher details by ID", Description = "Requires Admin role")]
+        public async Task<IActionResult> GetTeacherDetailsById([FromRoute] Guid teacherId)
         {
-            var response = await _teacherService.GetTeacherDetailsById(User, studentId);
+            var response = await _teacherService.GetTeacherDetailsById(User, teacherId);
             return StatusCode(response.StatusCode, response);
         }
-        
-        [HttpPut("status")]
+
+
+        [HttpPut("{teacherId:guid}/status")]
         [Authorize(Roles = "ADMIN")]
-        [SwaggerOperation(Summary = "Update teacher status", Description = "Requires Admin role " +
-        "|| Active = 1 (Hoạt động); Inactive = 0 (Không hoạt động); OnLeave = 2 (Nghỉ phép); Retired = 3 (Đã nghỉ hưu)")]
+        [SwaggerOperation(Summary = "Update teacher status by ID", Description = "Requires Admin role || Active = 1; Inactive = 0; OnLeave = 2; Retired = 3")]
         public async Task<IActionResult> UpdateTeacherStatus([FromBody] UpdateTeacherStatusDto updateTeacherStatusDto)
         {
             var response = await _teacherService.UpdateTeacherStatus(User, updateTeacherStatusDto);

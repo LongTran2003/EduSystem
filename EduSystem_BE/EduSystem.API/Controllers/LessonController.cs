@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EduSystem.API.Controllers;
 
 [ApiController]
-[Route("api/lesson")]
+[Route("api/lessons")]
+[SwaggerTag("Lesson Management APIs")]
 
 public class LessonController : ControllerBase
 {
@@ -19,7 +20,7 @@ public class LessonController : ControllerBase
         _lessonService = lessonService;
     }
     
-    [HttpPost("create")]
+    [HttpPost()]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Creates a new lesson", Description = "Requires Teacher role")]
     public async Task<IActionResult> CreateLesson([FromBody] CreateLessonDto createLessonDto)
@@ -38,8 +39,8 @@ public class LessonController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpGet("get/all")]
-    [SwaggerOperation(Summary = "Get all lessons", Description = "Requires authentication")]
+    [HttpGet()]
+    [SwaggerOperation(Summary = "Get all lessons", Description = "Supports pagination, filtering, and sorting")]
     public async Task<IActionResult> GetAllLessons(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -52,17 +53,17 @@ public class LessonController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/{lessonId:guid}")]
-    [SwaggerOperation(Summary = "Get lesson by id", Description = "Requires authentication")]
+    [HttpGet("{lessonId:guid}")]
+    [SwaggerOperation(Summary = "Get lesson by ID", Description = "Fetches a specific lesson by its ID")]
     public async Task<IActionResult> GetLessonById([FromRoute] Guid lessonId)
     {
         var response = await _lessonService.GetLessonById(User, lessonId);
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpPut("update")]
+    [HttpPut("{lessonId:guid}")]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Update lesson", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Update an existing lesson", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateLesson([FromBody] UpdateLessonDto updateLessonDto)
     {
         if (!ModelState.IsValid)
@@ -74,9 +75,9 @@ public class LessonController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
     
-    [HttpDelete("delete/{lessonId:guid}")]
+    [HttpDelete("{lessonId:guid}")]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Delete lesson (soft delete)", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Delete a lesson (soft delete)", Description = "Requires Teacher role")]
     public async Task<IActionResult>? DeleteLesson([FromRoute] Guid lessonId)
     {
         var response = await _lessonService.DeleteLesson(User, lessonId);

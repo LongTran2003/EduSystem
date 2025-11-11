@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace EduSystem.API.Controllers;
 
 [ApiController]
-[Route("api/unit")]
+[Route("api/units")]
+[SwaggerTag("Unit Management APIs")]
 
 public class UnitController : ControllerBase
 {
@@ -18,10 +19,10 @@ public class UnitController : ControllerBase
     {
         _unitService = unitService;
     }
-    
-    [HttpPost("create")]
+
+    [HttpPost]
     [Authorize(Roles = "TEACHER")]
-    [SwaggerOperation(Summary = "Creates a new unit", Description = "Requires Teacher role")]
+    [SwaggerOperation(Summary = "Create a new unit", Description = "Requires Teacher role")]
     public async Task<IActionResult> CreateUnit([FromBody] CreateUnitDto createUnitDto)
     {
         if (!ModelState.IsValid)
@@ -37,8 +38,8 @@ public class UnitController : ControllerBase
         var response = await _unitService.CreateUnit(User, createUnitDto);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpGet("get/all")]
+
+    [HttpGet]
     [SwaggerOperation(Summary = "Get all units", Description = "Requires authentication")]
     public async Task<IActionResult> GetAllUnits(
         [FromQuery] int pageNumber = 1,
@@ -52,15 +53,15 @@ public class UnitController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/{unitId:guid}")]
-    [SwaggerOperation(Summary = "Get a unit's detail", Description = "Requires authentication")]
+    [HttpGet("{unitId:guid}")]
+    [SwaggerOperation(Summary = "Get unit details by ID", Description = "Requires authentication")]
     public async Task<IActionResult> GetUnitDetailsById(Guid unitId)
     {
         var response = await _unitService.GetUnitDetailsById(User, unitId);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpPut("update")]
+
+    [HttpPut("{unitId:guid}")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Update unit", Description = "Requires Teacher role")]
     public async Task<IActionResult> UpdateUnit([FromBody] UpdateUnitDto updateUnitDto)
@@ -73,8 +74,8 @@ public class UnitController : ControllerBase
         var response = await _unitService.UpdateUnit(User, updateUnitDto);
         return StatusCode(response.StatusCode, response);
     }
-    
-    [HttpDelete("delete/{unitId:guid}")]
+
+    [HttpDelete("{unitId:guid}")]
     [Authorize(Roles = "TEACHER")]
     [SwaggerOperation(Summary = "Delete unit (soft delete)", Description = "Requires Teacher role")]
     public async Task<IActionResult>? DeleteUnit([FromRoute] Guid unitId)

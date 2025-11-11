@@ -2,11 +2,13 @@
 using EduSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EduSystem.API.Controllers;
 
 [ApiController]
-[Route("api/lessoncontent")]
+[Route("api/lesson-contents")]
+[SwaggerTag("Lesson Content Management APIs")]
 
 public class LessonContentController : ControllerBase
 {
@@ -17,23 +19,26 @@ public class LessonContentController : ControllerBase
         _lessonContentService = lessonContentService;
     }
     
-    [HttpPost("create")]
+    [HttpPost()]
     [Authorize(Roles = "ADMIN,TEACHER")]
+    [SwaggerOperation(Summary = "Create a new lesson content", Description = "Requires ADMIN or TEACHER role")]
     public async Task<IActionResult> CreateLessonContent([FromBody] CreateLessonContentDto createDto)
     {
         var response = await _lessonContentService.CreateLessonContent(User, createDto);
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpPut("update")]
+    [HttpPut()]
     [Authorize(Roles = "ADMIN,TEACHER")]
+    [SwaggerOperation(Summary = "Update an existing lesson content", Description = "Requires ADMIN or TEACHER role")]
     public async Task<IActionResult> UpdateLessonContent([FromBody] UpdateLessonContentDto updateDto)
     {
         var response = await _lessonContentService.UpdateLessonContent(User, updateDto);
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/all")]
+    [HttpGet()]
+    [SwaggerOperation(Summary = "Get all lesson contents", Description = "Supports pagination, filtering, and sorting")]
     public async Task<IActionResult> GetAllLessonContents(
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10,
@@ -46,15 +51,17 @@ public class LessonContentController : ControllerBase
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpGet("get/{contentId:guid}")]
+    [HttpGet("{contentId:guid}")]
+    [SwaggerOperation(Summary = "Get lesson content by ID", Description = "Fetches a specific lesson content by its ID")]
     public async Task<IActionResult> GetLessonContentById([FromRoute] Guid contentId)
     {
         var response = await _lessonContentService.GetLessonContentById(User, contentId);
         return StatusCode(response.StatusCode, response);
     }
 
-    [HttpDelete("delete/{contentId:guid}")]
+    [HttpDelete("{contentId:guid}")]
     [Authorize(Roles = "ADMIN,TEACHER")]
+    [SwaggerOperation(Summary = "Delete a lesson content", Description = "Requires ADMIN or TEACHER role")]
     public async Task<IActionResult> DeleteLessonContent([FromRoute] Guid contentId)
     {
         var response = await _lessonContentService.DeleteLessonContent(User, contentId);
