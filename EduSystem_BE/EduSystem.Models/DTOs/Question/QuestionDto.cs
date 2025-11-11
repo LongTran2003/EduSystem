@@ -6,8 +6,8 @@ public class QuestionDto
 {
     public Guid QuestionId { get; set; }
     public Guid TeacherId { get; set; }
-    public string TeacherName { get; set; }
-    public string Content { get; set; }
+    public string? TeacherName { get; set; }
+    public string? Content { get; set; }
     public string? QuestionType { get; set; }
     public string? Level { get; set; }
     public string? SkillType { get; set; }

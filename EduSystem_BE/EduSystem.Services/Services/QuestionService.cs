@@ -266,6 +266,77 @@ public class QuestionService : IQuestionService
                 result: resultDto);
     }
 
+    public async Task<ResponseDto> GetQuestionsByCurrentTeacher(
+        ClaimsPrincipal User,
+            int pageNumber,
+            int pageSize,
+            string? filterOn,
+            string? filterQuery,
+            string? sortBy)
+    {
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.User.UnAuthorized,
+                    statusCode: StaticOperationStatus.StatusCode.Unauthorized);
+
+            var teacher = await _unitOfWork.Teacher.GetAsync(t => t.UserId == userId);
+            if (teacher == null)
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.Teacher.NotFound,
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+
+            var (questions, totalQuestions) = await _unitOfWork.Question.GetQuestionsByCurrentTeacherAsync(
+                teacher.TeacherId, pageNumber, pageSize, filterOn, filterQuery, sortBy);
+
+            if (questions == null || !questions.Any() || totalQuestions == 0)
+            {
+                var emptyResult = new
+                {
+                    Data = Enumerable.Empty<QuestionDto>(),
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = 0,
+                    TotalPages = 0,
+                    HasPreviousPage = false,
+                    HasNextPage = false
+                };
+
+                return SuccessResponse.Build(
+                    message: StaticResponseMessage.Question.Found,
+                    statusCode: StaticOperationStatus.StatusCode.Ok,
+                    result: emptyResult);
+            }
+
+            var questionDtos = _mapper.Map<IEnumerable<QuestionDto>>(questions);
+
+            var result = new
+            {
+                Data = questionDtos,
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalQuestions,
+                TotalPages = (int)Math.Ceiling((double)totalQuestions / pageSize),
+                HasPreviousPage = pageNumber > 1,
+                HasNextPage = pageNumber < (int)Math.Ceiling((double)totalQuestions / pageSize)
+            };
+
+            return SuccessResponse.Build(
+                message: StaticResponseMessage.Question.Retrieved,
+                statusCode: StaticOperationStatus.StatusCode.Ok,
+                result: result);
+        }
+        catch (Exception ex)
+        {
+            return ErrorResponse.Build(
+                message: StaticResponseMessage.Question.NotRetrieved + ex.Message,
+                statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+        }
+
+    }
+
     public async Task<ResponseDto> DeleteQuestion(ClaimsPrincipal user, Guid questionId)
     {
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -324,4 +395,6 @@ public class QuestionService : IQuestionService
     {
         return await _unitOfWork.SaveAsync() == StaticOperationStatus.Database.Success;
     }
+
+    
 }

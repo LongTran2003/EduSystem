@@ -52,7 +52,22 @@ public class QuestionController : ControllerBase
             User, pageNumber, pageSize, filterOn, filterQuery, sortBy);
         return StatusCode(response.StatusCode, response);
     }
-    
+
+    [HttpGet("get/teacher/all")]
+    [Authorize(Roles = "TEACHER")]
+    [SwaggerOperation(Summary = "Get questions created by current teacher", Description = "Requires Teacher role")]
+    public async Task<IActionResult> GetMyQuestions(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? filterOn = null,
+        [FromQuery] string? filterQuery = null,
+        [FromQuery] string? sortBy = null)
+    {
+        var response = await _questionService.GetQuestionsByCurrentTeacher(
+            User, pageNumber, pageSize, filterOn, filterQuery, sortBy);
+        return StatusCode(response.StatusCode, response);
+    }
+
     [HttpGet("get/{questionId:guid}")]
     [SwaggerOperation(Summary = "Get a question's detail", Description = "Requires authentication")]
     public async Task<IActionResult> GetQuestionById(Guid questionId)

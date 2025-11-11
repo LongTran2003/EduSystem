@@ -16,5 +16,12 @@ public interface IQuestionService
         string? filterQuery = null,
         string? sortBy = null);
     Task<ResponseDto> GetQuestionById(ClaimsPrincipal user, Guid questionId);
+    Task<ResponseDto> GetQuestionsByCurrentTeacher(
+        ClaimsPrincipal User,
+        int pageNumber,
+        int pageSize,
+        string? filterOn,
+        string? filterQuery,
+        string? sortBy);
     Task<ResponseDto> DeleteQuestion(ClaimsPrincipal user, Guid questionId);
 }

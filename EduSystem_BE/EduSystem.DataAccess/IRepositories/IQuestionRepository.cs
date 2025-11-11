@@ -14,6 +14,16 @@ namespace EduSystem.DataAccess.IRepositories
             bool isAdmin = false,
             string? includeProperties = null
         );
+
+        Task<(List<Question> questions, int totalQuestions)> GetQuestionsByCurrentTeacherAsync(
+            Guid teacherId,
+            int pageNumber,
+            int pageSize,
+            string? filterOn,
+            string? filterQuery,
+            string? sortBy,
+            string? includeProperties = null);
+
         void Update(Question target, Question source);
     }
 }
