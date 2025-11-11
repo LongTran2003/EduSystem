@@ -9,6 +9,7 @@ using EduSystem.Models.DTOs.Answer;
 using EduSystem.Models.DTOs.LessonContent;
 using EduSystem.Models.DTOs.Matrix;
 using EduSystem.Models.DTOs.MatrixDetail;
+using EduSystem.Models.DTOs.QuizQuestion;
 using EduSystem.Models.DTOs.StudentAnswers;
 using EduSystem.Models.DTOs.Teacher;
 using EduSystem.Models.Entities;
@@ -380,7 +381,37 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.TeacherFeedback, opt => opt.MapFrom(src => src.TeacherFeedback))
                 .ReverseMap();
 
+            // QuizQuestion to QuizQuestionDto
+            CreateMap<QuizQuestion, QuizQuestionDto>()
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.QuizTitle, opt => opt.MapFrom(src => src.Quiz.QuizName))
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.Question.Content))
+                .ForMember(dest => dest.QuestionType, opt => opt.MapFrom(src => src.Question.QuestionType))
+                .ForMember(dest => dest.QuestionOrder, opt => opt.MapFrom(src => src.QuestionOrder))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdatedTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();
 
+            CreateMap<QuizQuestion, CreateQuizQuestionDto>()
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.QuestionOrder, opt => opt.MapFrom(src => src.QuestionOrder))
+                .ReverseMap();
+
+            CreateMap<QuizQuestion, UpdateQuestionOrderDto>()
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+                .ForMember(dest => dest.NewOrder, opt => opt.MapFrom(src => src.QuestionOrder))
+                .ReverseMap();
+
+            CreateMap<QuizQuestion, AddQuestionsToQuizDto>()
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.QuestionIds, opt => opt.Ignore())
+                .ReverseMap();
         }
     }
 }

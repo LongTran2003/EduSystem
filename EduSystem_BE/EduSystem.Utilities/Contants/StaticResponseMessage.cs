@@ -186,5 +186,20 @@
             public const string Found = "Student answers found";
             public const string NotFound = "Student answer not found";
         }
+
+        public static class QuizQuestion
+        {
+            public const string Created = "QuizQuestion(s) created successfully";
+            public const string NotCreated = "QuizQuestion(s) cannot create beacause: ";
+            public const string AlreadyExist = "QuizQuestion(s) already exist ";
+            public const string Updated = "QuizQuestion(s) updated successfully";
+            public const string NotUpdated = "QuizQuestion cannot update";
+            public const string NotFound = "QuizQuestion not found";
+            public const string Found = "QuizQuestion found";
+            public const string Retrieved = "QuizQuestion information retrieved successfully";
+            public const string NotRetrieved = "QuizQuestion information cannot retrieved";
+            public const string Deleted = "QuizQuestion(s) deleted successfully";
+            public const string NotDeleted = "QuizQuestion cannot delete";
+        }
     }
 }
