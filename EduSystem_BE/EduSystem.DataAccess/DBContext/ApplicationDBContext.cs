@@ -145,16 +145,23 @@ namespace EduSystem.DataAccess.DBContext
                 .HasForeignKey(sa => sa.AnswerId);
 
             // StudentProgress configuration (Composite Key)
-            modelBuilder.Entity<StudentProgress>()
-                .HasKey(sp => new { sp.StudentId, sp.LessonId });
-            modelBuilder.Entity<StudentProgress>()
-                .HasOne(sp => sp.Student)
-                .WithMany(s => s.StudentProgresses)
-                .HasForeignKey(sp => sp.StudentId);
-            modelBuilder.Entity<StudentProgress>()
-                .HasOne(sp => sp.Lesson)
-                .WithMany(l => l.StudentProgresses)
-                .HasForeignKey(sp => sp.LessonId);
+            modelBuilder.Entity<StudentProgress>(entity =>
+            {
+                entity.HasKey(sp => sp.ProgressId);
+
+                entity.HasOne(sp => sp.Student)
+                    .WithMany(s => s.StudentProgresses)
+                    .HasForeignKey(sp => sp.StudentId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(sp => sp.Unit)
+                    .WithMany()
+                    .HasForeignKey(sp => sp.UnitId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(sp => new { sp.StudentId, sp.UnitId })
+                    .IsUnique();
+            });
 
             // Teacher configuration
             modelBuilder.Entity<Teacher>()

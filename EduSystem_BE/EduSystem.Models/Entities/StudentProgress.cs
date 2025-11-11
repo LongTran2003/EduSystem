@@ -6,20 +6,29 @@ namespace EduSystem.Models.Entities
     public class StudentProgress
     {
         [Key]
+        public Guid ProgressId { get; set; }
+
         public Guid StudentId { get; set; }
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; } = null!;
 
-        public Guid LessonId { get; set; }
-        [ForeignKey("LessonId")]
-        public virtual Lesson Lesson { get; set; } = null!;
+        public Guid UnitId { get; set; }
+        [ForeignKey("UnitId")]
+        public virtual Unit Unit { get; set; } = null!;
 
-        public int CompletionStatus { get; set; } = 0;
+        [Range(0, int.MaxValue)]
+        public int CompletedLessons { get; set; } = 0;
 
-        public DateTime? LastAccessDate { get; set; }
+        [Range(1, int.MaxValue)]
+        public int TotalLessons { get; set; } = 0;
 
-        public int TimeSpent { get; set; } = 0; // Minutes
+        [Column(TypeName = "decimal(5,2)")]
+        [Range(0, 100)]
+        public decimal AverageScore { get; set; } = 0;
 
-        public string? Notes { get; set; }
+        public DateTime LastAccessDate { get; set; }
+
+        [Range(0, int.MaxValue)]
+        public int TotalTimeSpent { get; set; } = 0; // in minutes
     }
 }

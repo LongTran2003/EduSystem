@@ -84,9 +84,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ApplicationUser.ImageUrl))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TeacherCode, opt => opt.MapFrom(src => src.TeacherCode))
-                .ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.Specialization))
-                .ForMember(dest => dest.TeachingExperience, opt => opt.MapFrom(src => src.TeachingExperience))
-                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.Rating));
+                .ForMember(dest => dest.TeachingExperience, opt => opt.MapFrom(src => src.TeachingExperience));
 
             // Lesson to LessonDto
             CreateMap<Lesson, LessonDto>()

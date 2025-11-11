@@ -3,6 +3,7 @@ using System;
 using EduSystem.DataAccess.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EduSystem.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251110113839_FixDB#14")]
+    partial class FixDB14
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,7 +167,7 @@ namespace EduSystem.DataAccess.Migrations
                             AccessFailedCount = 0,
                             Address = "123 Admin St",
                             BirthDate = new DateTime(2001, 6, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            ConcurrencyStamp = "20f6a7f8-b32d-4b0f-ac4d-85a13fdfd99f",
+                            ConcurrencyStamp = "da7299ea-0c57-4c64-a213-656c6498662a",
                             Email = "admin@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Admin",
@@ -172,10 +175,10 @@ namespace EduSystem.DataAccess.Migrations
                             LockoutEnabled = true,
                             NormalizedEmail = "ADMIN@GMAIL.COM",
                             NormalizedUserName = "ADMIN@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEC1nTk09l5/2VXe2rk4jBtcrYaZB6TvUSx4rPNVlQIyzTON+IukU2eICO+ncHtZvNw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBawvA9GYmCm9FWlZXTpP+1LnbJSbYxtpEaZEAVTUEX72oWpwIk/BkU2qQu0eyZCmQ==",
                             PhoneNumber = "1234567890",
                             PhoneNumberConfirmed = true,
-                            SecurityStamp = "15df3a25-a0cf-42cd-a4d1-7dc571573a24",
+                            SecurityStamp = "3200a1d5-bb16-4383-9e98-413ae99f4dd5",
                             Status = "Active",
                             TwoFactorEnabled = false,
                             UserName = "admin@gmail.com"
@@ -697,6 +700,13 @@ namespace EduSystem.DataAccess.Migrations
                     b.Property<Guid>("TeacherId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Rating")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<string>("Specialization")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

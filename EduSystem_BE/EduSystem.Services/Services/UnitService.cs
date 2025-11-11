@@ -146,8 +146,9 @@ public class UnitService : IUnitService
 
         // 1. Tải Entity Unit và Entity Teacher liên quan
         var getUnit = await _unitOfWork.Unit.GetAsync(
-            u => u.UnitId == unitId && u.Status != StaticOperationStatus.BaseEntity.Deleted);
-    
+        u => u.UnitId == unitId && u.Status != StaticOperationStatus.BaseEntity.Deleted,
+        includeProperties: "Teacher");
+
         if (getUnit is null)
         {
             return ErrorResponse.Build(

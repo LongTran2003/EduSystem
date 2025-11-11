@@ -41,7 +41,6 @@ namespace EduSystem.DataAccess.Repositories
                     "email" => query.Where(t => t.ApplicationUser.Email != null && t.ApplicationUser.Email.Contains(filterQuery)),
                     "phonenumber" => query.Where(t => t.ApplicationUser.PhoneNumber != null && t.ApplicationUser.PhoneNumber.Contains(filterQuery)),
                     "teachercode" => query.Where(t => t.TeacherCode.Contains(filterQuery)),
-                    "specialization" => query.Where(t => t.Specialization != null && t.Specialization.Contains(filterQuery)),
                     "status" => Enum.TryParse<TeacherStatus>(filterQuery, true, out var status)
                         ? query.Where(t => t.Status == status)
                         : query,
@@ -72,8 +71,6 @@ namespace EduSystem.DataAccess.Repositories
                 "teachercode_desc" => query.OrderByDescending(t => t.TeacherCode),
                 "status" => query.OrderBy(t => t.Status),
                 "status_desc" => query.OrderByDescending(t => t.Status),
-                "specialization" => query.OrderBy(t => t.Specialization),
-                "specialization_desc" => query.OrderByDescending(t => t.Specialization),
                 "teachingexperience" => query.OrderBy(t => t.TeachingExperience),
                 "teachingexperience_desc" => query.OrderByDescending(t => t.TeachingExperience),
                 _ => query.OrderBy(t => t.ApplicationUser.FullName)

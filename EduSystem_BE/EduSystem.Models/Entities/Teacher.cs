@@ -13,13 +13,7 @@ namespace EduSystem.Models.Entities
         [StringLength(8)] public string TeacherCode { get; set; } = null!;
         public TeacherStatus Status { get; set; } = TeacherStatus.Active;
 
-        [StringLength(100)]
-        public string? Specialization { get; set; } // Chuyên môn, ví dụ: Toán học, Vật lý, v.v.
-
         public int TeachingExperience { get; set; } = 0; // Kinh nghiệm giảng dạy: 5+ years, 10+ years
-
-        [Column(TypeName = "decimal(3,2)")]
-        public decimal? Rating { get; set; }
 
         // Thêm các thuộc tính ICollection dưới đây
         public virtual ICollection<Unit> Units { get; set; } = new List<Unit>();

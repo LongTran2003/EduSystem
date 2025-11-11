@@ -243,9 +243,7 @@ namespace EduSystem.Services.Services
                         {
                             UserId = newUser.Id,
                             TeacherCode = teacherCode,
-                            Specialization = signUpTeacherDto.Specialization,
                             TeachingExperience = signUpTeacherDto.TeachingExperience,
-                            Rating = signUpTeacherDto.Rating,
                             Status = Models.Enums.TeacherStatus.Active
                         };
 
