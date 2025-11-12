@@ -132,20 +132,26 @@ namespace EduSystem.DataAccess.DBContext
             modelBuilder.Entity<StudentAnswer>(entity =>
             {
                 entity.HasKey(sa => sa.StudentAnswerId);
+
+                // Mỗi Attempt chỉ có 1 câu trả lời cho 1 Question
                 entity.HasIndex(sa => new { sa.AttemptId, sa.QuestionId }).IsUnique();
 
                 entity.HasOne(sa => sa.QuizAttempt)
                       .WithMany(qa => qa.StudentAnswers)
-                      .HasForeignKey(sa => sa.AttemptId);
+                      .HasForeignKey(sa => sa.AttemptId)
+                      .OnDelete(DeleteBehavior.Cascade);
 
+                // IMPORTANT: bắt cặp đúng navigation để tránh shadow FK (*Id1)
                 entity.HasOne(sa => sa.Question)
-                      .WithMany()
-                      .HasForeignKey(sa => sa.QuestionId);
+                      .WithMany(q => q.StudentAnswers)          // <-- dùng nav ở Question
+                      .HasForeignKey(sa => sa.QuestionId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(sa => sa.Answer)
-                      .WithMany()
+                      .WithMany(a => a.StudentAnswers)          // <-- dùng nav ở Answer
                       .HasForeignKey(sa => sa.AnswerId)
-                      .OnDelete(DeleteBehavior.NoAction);
+                      .IsRequired(false)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // StudentProgress configuration (Composite Key)

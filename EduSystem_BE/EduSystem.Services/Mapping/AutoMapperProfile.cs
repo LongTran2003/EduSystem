@@ -475,7 +475,6 @@ namespace EduSystem.Services.Mapping
                 .ReverseMap();
 
             CreateMap<CreateQuizAttemptDto, QuizAttempt>()
-                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.StudentId))
                 .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime))
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))

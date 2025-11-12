@@ -3,6 +3,7 @@ using EduSystem.DataAccess.IRepositories;
 using EduSystem.Models.DTO;
 using EduSystem.Models.DTOs.QuizAttempt;
 using EduSystem.Models.Entities;
+using EduSystem.Models.Enums;
 using EduSystem.Services.Helpers.Responses;
 using EduSystem.Services.IServices;
 using EduSystem.Utilities.Constants;
@@ -26,24 +27,29 @@ namespace EduSystem.Services.Services
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.User.UnAuthorized,
-                    statusCode: StaticOperationStatus.StatusCode.Unauthorized);
+                return ErrorResponse.Build(StaticResponseMessage.User.UnAuthorized,
+                    StaticOperationStatus.StatusCode.Unauthorized);
 
-            var student = await _unitOfWork.Student.GetAsync(s => s.StudentId == createQuizAttemptDto.StudentId);
+            var role = user.FindFirstValue(ClaimTypes.Role);
+            if (role != StaticUserRoles.Student)
+                return ErrorResponse.Build(StaticResponseMessage.User.UnAuthorized,
+                    StaticOperationStatus.StatusCode.Forbidden);
+
+            var student = await _unitOfWork.Student.GetAsync(s =>
+                s.UserId == userId && s.Status != StudentStatus.Inactive);
             if (student == null)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Student.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+                return ErrorResponse.Build(StaticResponseMessage.Student.NotFound,
+                    StaticOperationStatus.StatusCode.NotFound);
 
-            var quiz = await _unitOfWork.Quiz.GetAsync(q => q.QuizId == createQuizAttemptDto.QuizId);
+            var quiz = await _unitOfWork.Quiz.GetAsync(q =>
+                q.QuizId == createQuizAttemptDto.QuizId && q.Status != StaticOperationStatus.BaseEntity.Deleted);
             if (quiz == null)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.Quiz.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+                return ErrorResponse.Build(StaticResponseMessage.Quiz.NotFound,
+                    StaticOperationStatus.StatusCode.NotFound);
 
             var attempt = _mapper.Map<QuizAttempt>(createQuizAttemptDto);
             attempt.QuizAttemptId = Guid.NewGuid();
+            attempt.StudentId = student.StudentId;          // gán từ token
             attempt.Status = StaticOperationStatus.BaseEntity.Active;
             attempt.CreatedBy = user.FindFirstValue("FullName");
             attempt.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
@@ -52,15 +58,15 @@ namespace EduSystem.Services.Services
 
             return (await SaveChangesAsync())
                 ? SuccessResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.Created,
-                    statusCode: StaticOperationStatus.StatusCode.Created,
-                    result: _mapper.Map<QuizAttemptDto>(
+                    StaticResponseMessage.QuizAttempt.Created,
+                    StaticOperationStatus.StatusCode.Created,
+                    _mapper.Map<QuizAttemptDto>(
                         await _unitOfWork.QuizAttempt.GetAsync(
                             qa => qa.QuizAttemptId == attempt.QuizAttemptId,
                             includeProperties: "Student,Student.ApplicationUser,Quiz")))
                 : ErrorResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.NotCreated,
-                    statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+                    StaticResponseMessage.QuizAttempt.NotCreated,
+                    StaticOperationStatus.StatusCode.InternalServerError);
         }
 
         public async Task<ResponseDto> UpdateQuizAttempt(ClaimsPrincipal user, UpdateQuizAttemptDto updateQuizAttemptDto)

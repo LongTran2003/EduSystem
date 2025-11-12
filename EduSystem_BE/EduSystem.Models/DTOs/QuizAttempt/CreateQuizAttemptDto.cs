@@ -7,7 +7,6 @@ namespace EduSystem.Models.DTOs.QuizAttempt
     public class CreateQuizAttemptDto
     {
         public Guid QuizId { get; set; }
-        public Guid StudentId { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public double Score { get; set; }
