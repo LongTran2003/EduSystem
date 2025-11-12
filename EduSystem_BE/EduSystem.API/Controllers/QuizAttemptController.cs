@@ -39,9 +39,9 @@ namespace EduSystem.API.Controllers
 
         [HttpGet("{quizAttemptId:guid}")]
         [SwaggerOperation(Summary = "Get quiz attempt by ID", Description = "Fetches a specific quiz attempt by its ID")]
-        public async Task<IActionResult> GetQuizAttemptById([FromRoute] Guid id)
+        public async Task<IActionResult> GetQuizAttemptById([FromRoute] Guid quizAttemptId)
         {
-            var result = await _quizAttemptService.GetQuizAttemptById(User, id);
+            var result = await _quizAttemptService.GetQuizAttemptById(User, quizAttemptId);
             return StatusCode(result.StatusCode, result);
         }
 
@@ -84,9 +84,9 @@ namespace EduSystem.API.Controllers
 
         [HttpDelete("{quizAttemptId:guid}")]
         [SwaggerOperation(Summary = "Delete a quiz attempt", Description = "Requires authentication")]
-        public async Task<IActionResult> DeleteQuizAttempt([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteQuizAttempt([FromRoute] Guid quizAttemptId)
         {
-            var result = await _quizAttemptService.DeleteQuizAttempt(User, id);
+            var result = await _quizAttemptService.DeleteQuizAttempt(User, quizAttemptId);
             return StatusCode(result.StatusCode, result);
         }
     }
