@@ -1,4 +1,5 @@
-﻿using EduSystem.Utilities.Contants;
+﻿using EduSystem.Models.DTOs.StudentAnswers;
+using EduSystem.Utilities.Contants;
 using System.ComponentModel.DataAnnotations;
 
 namespace EduSystem.Models.DTOs.QuizAttempt
@@ -10,6 +11,6 @@ namespace EduSystem.Models.DTOs.QuizAttempt
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public double Score { get; set; }
-        //public List<CreateStudentAnswerDto>? StudentAnswers { get; set; }
+        public List<CreateStudentAnswerDto>? StudentAnswers { get; set; } = new List<CreateStudentAnswerDto>();
     }
 }

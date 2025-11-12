@@ -24,49 +24,57 @@ namespace EduSystem.Services.Services
 
         public async Task<ResponseDto> CreateQuizAttempt(ClaimsPrincipal user, CreateQuizAttemptDto createQuizAttemptDto)
         {
-            try
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.User.UnAuthorized,
+                    statusCode: StaticOperationStatus.StatusCode.Unauthorized);
+
+            var student = await _unitOfWork.Student.GetAsync(s => s.StudentId == createQuizAttemptDto.StudentId);
+            if (student == null)
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.Student.NotFound,
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+
+            var quiz = await _unitOfWork.Quiz.GetAsync(q => q.QuizId == createQuizAttemptDto.QuizId);
+            if (quiz == null)
+                return ErrorResponse.Build(
+                    message: StaticResponseMessage.Quiz.NotFound,
+                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+
+            var attempt = _mapper.Map<QuizAttempt>(createQuizAttemptDto);
+            attempt.QuizAttemptId = Guid.NewGuid();
+            attempt.Score = (decimal?)createQuizAttemptDto.Score;
+            attempt.Status = StaticOperationStatus.BaseEntity.Active;
+            attempt.CreatedBy = user.FindFirstValue("FullName");
+            attempt.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
+
+            await _unitOfWork.QuizAttempt.AddAsync(attempt);
+
+            if (createQuizAttemptDto.StudentAnswers != null && createQuizAttemptDto.StudentAnswers.Any())
             {
-                var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(userId))
-                    return ErrorResponse.Build(
-                        message: StaticResponseMessage.User.UnAuthorized,
-                        statusCode: StaticOperationStatus.StatusCode.Unauthorized);
+                foreach (var a in createQuizAttemptDto.StudentAnswers)
+                {
+                    var sa = _mapper.Map<StudentAnswer>(a);
+                    sa.AttemptId = attempt.QuizAttemptId;
+                    sa.Status = StaticOperationStatus.BaseEntity.Active;
+                    sa.CreatedBy = attempt.CreatedBy;
+                    sa.CreatedTime = attempt.CreatedTime;
+                    await _unitOfWork.StudentAnswer.AddAsync(sa);
+                }
+            }
 
-                // Validate student exists
-                var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
-                if (student == null)
-                    return ErrorResponse.Build(
-                        message: StaticResponseMessage.Student.NotFound,
-                        statusCode: StaticOperationStatus.StatusCode.NotFound);
-
-                // Validate quiz exists
-                var quiz = await _unitOfWork.Quiz.GetAsync(q => q.QuizId == createQuizAttemptDto.QuizId);
-                if (quiz == null)
-                    return ErrorResponse.Build(
-                        message: StaticResponseMessage.Quiz.NotFound,
-                        statusCode: StaticOperationStatus.StatusCode.NotFound);
-
-                var quizAttempt = _mapper.Map<QuizAttempt>(createQuizAttemptDto);
-                quizAttempt.QuizAttemptId = Guid.NewGuid();
-                quizAttempt.StudentId = student.StudentId;
-                quizAttempt.Status = StaticOperationStatus.BaseEntity.Active;
-                quizAttempt.CreatedBy = user.FindFirstValue("FullName");
-                quizAttempt.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
-
-                await _unitOfWork.QuizAttempt.AddAsync(quizAttempt);
-                await _unitOfWork.SaveAsync();
-
-                return SuccessResponse.Build(
+            return (await SaveChangesAsync())
+                ? SuccessResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.Created,
                     statusCode: StaticOperationStatus.StatusCode.Created,
-                    result: _mapper.Map<QuizAttemptDto>(quizAttempt));
-            }
-            catch (Exception ex)
-            {
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.NotCreated + ex.Message,
+                    result: _mapper.Map<QuizAttemptDto>(
+                        await _unitOfWork.QuizAttempt.GetAsync(
+                            qa => qa.QuizAttemptId == attempt.QuizAttemptId,
+                            includeProperties: "Student,Student.ApplicationUser,Quiz,StudentAnswers")))
+                : ErrorResponse.Build(
+                    message: StaticResponseMessage.QuizAttempt.NotCreated,
                     statusCode: StaticOperationStatus.StatusCode.InternalServerError);
-            }
         }
 
         public async Task<ResponseDto> UpdateQuizAttempt(ClaimsPrincipal user, UpdateQuizAttemptDto updateQuizAttemptDto)
@@ -77,41 +85,62 @@ namespace EduSystem.Services.Services
                     message: StaticResponseMessage.User.NotFound,
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
 
-            var updateQuizAttempt = await _unitOfWork.QuizAttempt.GetAsync(
+            var attempt = await _unitOfWork.QuizAttempt.GetAsync(
                 qa => qa.QuizAttemptId == updateQuizAttemptDto.QuizAttemptId &&
-                qa.Status != StaticOperationStatus.BaseEntity.Deleted);
+                      qa.Status != StaticOperationStatus.BaseEntity.Deleted,
+                includeProperties: "Student,Student.ApplicationUser,Quiz,StudentAnswers");
 
-            if (updateQuizAttempt is null)
+            if (attempt == null)
                 return ErrorResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.NotFound,
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
 
-            // Verify ownership (student can only update their own attempts)
-            var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
             var userRole = user.FindFirstValue(ClaimTypes.Role);
-            if (student != null && updateQuizAttempt.StudentId != student.StudentId && userRole != StaticUserRoles.Admin)
+            var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
+            if (student != null && attempt.StudentId != student.StudentId &&
+                userRole != StaticUserRoles.Admin && userRole != StaticUserRoles.Teacher)
                 return ErrorResponse.Build(
                     message: StaticResponseMessage.User.UnAuthorized,
                     statusCode: StaticOperationStatus.StatusCode.Forbidden);
 
-            var updatedQuizAttempt = _mapper.Map<UpdateQuizAttemptDto, QuizAttempt>(updateQuizAttemptDto);
-            updatedQuizAttempt.Status = StaticOperationStatus.BaseEntity.Active;
-            updatedQuizAttempt.CreatedBy = updateQuizAttempt.CreatedBy;
-            updatedQuizAttempt.CreatedTime = updateQuizAttempt.CreatedTime;
-            updatedQuizAttempt.UpdatedBy = user.FindFirstValue("FullName");
-            updatedQuizAttempt.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+            // Update fields
+            if (updateQuizAttemptDto.EndTime.HasValue) attempt.EndTime = updateQuizAttemptDto.EndTime.Value;
+            if (updateQuizAttemptDto.Score.HasValue) attempt.Score = updateQuizAttemptDto.Score.Value;
 
-            _unitOfWork.QuizAttempt.Update(updateQuizAttempt, updatedQuizAttempt);
+            attempt.UpdatedBy = user.FindFirstValue("FullName");
+            attempt.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
 
-            var resultDto = _mapper.Map<QuizAttemptDto>(updateQuizAttempt);
+            // Replace student answers if provided
+            if (updateQuizAttemptDto.StudentAnswers != null && updateQuizAttemptDto.StudentAnswers.Any())
+            {
+                var existingAnswers = await _unitOfWork.StudentAnswer.GetAllAsync(sa => sa.AttemptId == attempt.QuizAttemptId);
+                foreach (var old in existingAnswers)
+                {
+                    old.Status = StaticOperationStatus.BaseEntity.Deleted;
+                    old.UpdatedBy = attempt.UpdatedBy;
+                    old.UpdatedTime = attempt.UpdatedTime;
+                }
 
-            return (await SaveChangesAsync()) ?
-                SuccessResponse.Build(
+                foreach (var upd in updateQuizAttemptDto.StudentAnswers)
+                {
+                    var sa = _mapper.Map<StudentAnswer>(upd);
+                    sa.AttemptId = attempt.QuizAttemptId;
+                    sa.Status = StaticOperationStatus.BaseEntity.Active;
+                    sa.CreatedBy = attempt.CreatedBy;
+                    sa.CreatedTime = attempt.CreatedTime;
+                    sa.UpdatedBy = attempt.UpdatedBy;
+                    sa.UpdatedTime = attempt.UpdatedTime;
+                    await _unitOfWork.StudentAnswer.AddAsync(sa);
+                }
+            }
+
+            // Return theo mẫu bạn đưa
+            return (await SaveChangesAsync())
+                ? SuccessResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.Updated,
                     statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: resultDto)
-                :
-                ErrorResponse.Build(
+                    result: _mapper.Map<QuizAttemptDto>(attempt))
+                : ErrorResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.NotUpdated,
                     statusCode: StaticOperationStatus.StatusCode.InternalServerError);
         }
@@ -119,37 +148,31 @@ namespace EduSystem.Services.Services
         public async Task<ResponseDto> GetQuizAttemptById(ClaimsPrincipal user, Guid quizAttemptId)
         {
             if (user.FindFirstValue(ClaimTypes.NameIdentifier) is null)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.User.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+                return ErrorResponse.Build(StaticResponseMessage.User.NotFound,
+                    StaticOperationStatus.StatusCode.NotFound);
 
-            var getQuizAttempt = await _unitOfWork.QuizAttempt.GetAsync(
+            var attempt = await _unitOfWork.QuizAttempt.GetAsync(
                 qa => qa.QuizAttemptId == quizAttemptId &&
-                qa.Status != StaticOperationStatus.BaseEntity.Deleted,
-                includeProperties: "Student,Quiz,StudentAnswers");
+                      qa.Status != StaticOperationStatus.BaseEntity.Deleted,
+                includeProperties: "Student,Student.ApplicationUser,Quiz,StudentAnswers");
 
-            if (getQuizAttempt is null)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+            if (attempt == null)
+                return ErrorResponse.Build(StaticResponseMessage.QuizAttempt.NotFound,
+                    StaticOperationStatus.StatusCode.NotFound);
 
-            // Verify access rights
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
             var userRole = user.FindFirstValue(ClaimTypes.Role);
+            var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
 
-            if (student != null && getQuizAttempt.StudentId != student.StudentId &&
+            if (student != null && attempt.StudentId != student.StudentId &&
                 userRole != StaticUserRoles.Admin && userRole != StaticUserRoles.Teacher)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.User.UnAuthorized,
-                    statusCode: StaticOperationStatus.StatusCode.Forbidden);
-
-            var resultDto = _mapper.Map<QuizAttemptDto>(getQuizAttempt);
+                return ErrorResponse.Build(StaticResponseMessage.User.UnAuthorized,
+                    StaticOperationStatus.StatusCode.Forbidden);
 
             return SuccessResponse.Build(
-                message: StaticResponseMessage.QuizAttempt.Retrieved,
-                statusCode: StaticOperationStatus.StatusCode.Ok,
-                result: resultDto);
+                StaticResponseMessage.QuizAttempt.Retrieved,
+                StaticOperationStatus.StatusCode.Ok,
+                _mapper.Map<QuizAttemptDto>(attempt));
         }
 
         public async Task<ResponseDto> GetAllQuizAttempts(
@@ -167,7 +190,7 @@ namespace EduSystem.Services.Services
                 bool isAdmin = userRole == StaticUserRoles.Admin;
 
                 var (quizAttempts, totalCount) = await _unitOfWork.QuizAttempt.GetQuizAttemptsAsync(
-                    pageNumber, pageSize, filterOn, filterQuery, sortBy, isAdmin, "Student,Quiz");
+                    pageNumber, pageSize, filterOn, filterQuery, sortBy, isAdmin, "Student,Student.ApplicationUser,Quiz");
 
                 // Filter by student if not admin/teacher
                 if (userRole == StaticUserRoles.Student)
@@ -230,52 +253,50 @@ namespace EduSystem.Services.Services
             try
             {
                 var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                var userRole = user.FindFirstValue(ClaimTypes.Role);
+                var role = user.FindFirstValue(ClaimTypes.Role);
 
-                // Verify quiz exists
                 var quiz = await _unitOfWork.Quiz.GetAsync(q => q.QuizId == quizId);
                 if (quiz == null)
-                    return ErrorResponse.Build(
-                        message: StaticResponseMessage.Quiz.NotFound,
-                        statusCode: StaticOperationStatus.StatusCode.NotFound);
+                    return ErrorResponse.Build(StaticResponseMessage.Quiz.NotFound,
+                        StaticOperationStatus.StatusCode.NotFound);
 
-                var (quizAttempts, totalCount) = await _unitOfWork.QuizAttempt.GetQuizAttemptsAsync(
-                    pageNumber, pageSize, "quizid", quizId.ToString(), "starttime_desc", false, "Student");
+                var (attempts, total) = await _unitOfWork.QuizAttempt.GetQuizAttemptsAsync(
+                    pageNumber, pageSize, "quizid", quizId.ToString(), "starttime_desc", false,
+                    "Student,Student.ApplicationUser,Quiz");
 
-                // Filter by student if not admin/teacher
-                if (userRole == StaticUserRoles.Student)
+                if (role == StaticUserRoles.Student)
                 {
-                    var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
-                    if (student != null)
+                    var stu = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
+                    if (stu != null)
                     {
-                        quizAttempts = quizAttempts.Where(qa => qa.StudentId == student.StudentId).ToList();
-                        totalCount = quizAttempts.Count;
+                        attempts = attempts.Where(a => a.StudentId == stu.StudentId).ToList();
+                        total = attempts.Count;
                     }
                 }
 
-                var attemptsDto = _mapper.Map<IEnumerable<QuizAttemptDto>>(quizAttempts);
+                var dto = _mapper.Map<IEnumerable<QuizAttemptDto>>(attempts);
 
                 var result = new
                 {
-                    Data = attemptsDto,
+                    Data = dto,
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalCount = totalCount,
-                    TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
+                    TotalCount = total,
+                    TotalPages = (int)Math.Ceiling((double)total / pageSize),
                     HasPreviousPage = pageNumber > 1,
-                    HasNextPage = pageNumber < (int)Math.Ceiling((double)totalCount / pageSize)
+                    HasNextPage = pageNumber < (int)Math.Ceiling((double)total / pageSize)
                 };
 
                 return SuccessResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.Retrieved,
-                    statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: result);
+                    StaticResponseMessage.QuizAttempt.Retrieved,
+                    StaticOperationStatus.StatusCode.Ok,
+                    result);
             }
             catch (Exception ex)
             {
                 return ErrorResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.NotRetrieved + ex.Message,
-                    statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+                    StaticResponseMessage.QuizAttempt.NotRetrieved + ex.Message,
+                    StaticOperationStatus.StatusCode.InternalServerError);
             }
         }
 
@@ -284,49 +305,46 @@ namespace EduSystem.Services.Services
             try
             {
                 var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-                var userRole = user.FindFirstValue(ClaimTypes.Role);
+                var role = user.FindFirstValue(ClaimTypes.Role);
 
-                // Verify student exists
                 var student = await _unitOfWork.Student.GetAsync(s => s.StudentId == studentId);
                 if (student == null)
-                    return ErrorResponse.Build(
-                        message: StaticResponseMessage.Student.NotFound,
-                        statusCode: StaticOperationStatus.StatusCode.NotFound);
+                    return ErrorResponse.Build(StaticResponseMessage.Student.NotFound,
+                        StaticOperationStatus.StatusCode.NotFound);
 
-                // Verify access rights
-                var currentStudent = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
-                if (currentStudent != null && currentStudent.StudentId != studentId &&
-                    userRole != StaticUserRoles.Admin && userRole != StaticUserRoles.Teacher)
-                    return ErrorResponse.Build(
-                        message: StaticResponseMessage.User.UnAuthorized,
-                        statusCode: StaticOperationStatus.StatusCode.Forbidden);
+                var current = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
+                if (current != null && current.StudentId != studentId &&
+                    role != StaticUserRoles.Admin && role != StaticUserRoles.Teacher)
+                    return ErrorResponse.Build(StaticResponseMessage.User.UnAuthorized,
+                        StaticOperationStatus.StatusCode.Forbidden);
 
-                var (quizAttempts, totalCount) = await _unitOfWork.QuizAttempt.GetQuizAttemptsAsync(
-                    pageNumber, pageSize, "studentid", studentId.ToString(), "starttime_desc", false, "Quiz");
+                var (attempts, total) = await _unitOfWork.QuizAttempt.GetQuizAttemptsAsync(
+                    pageNumber, pageSize, "studentid", studentId.ToString(), "starttime_desc", false,
+                    "Student,Student.ApplicationUser,Quiz");
 
-                var attemptsDto = _mapper.Map<IEnumerable<QuizAttemptDto>>(quizAttempts);
+                var dto = _mapper.Map<IEnumerable<QuizAttemptDto>>(attempts);
 
                 var result = new
                 {
-                    Data = attemptsDto,
+                    Data = dto,
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalCount = totalCount,
-                    TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
+                    TotalCount = total,
+                    TotalPages = (int)Math.Ceiling((double)total / pageSize),
                     HasPreviousPage = pageNumber > 1,
-                    HasNextPage = pageNumber < (int)Math.Ceiling((double)totalCount / pageSize)
+                    HasNextPage = pageNumber < (int)Math.Ceiling((double)total / pageSize)
                 };
 
                 return SuccessResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.Retrieved,
-                    statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: result);
+                    StaticResponseMessage.QuizAttempt.Retrieved,
+                    StaticOperationStatus.StatusCode.Ok,
+                    result);
             }
             catch (Exception ex)
             {
                 return ErrorResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.NotRetrieved + ex.Message,
-                    statusCode: StaticOperationStatus.StatusCode.InternalServerError);
+                    StaticResponseMessage.QuizAttempt.NotRetrieved + ex.Message,
+                    StaticOperationStatus.StatusCode.InternalServerError);
             }
         }
 
@@ -334,35 +352,32 @@ namespace EduSystem.Services.Services
         {
             var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId is null)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.User.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+                return ErrorResponse.Build(StaticResponseMessage.User.NotFound,
+                    StaticOperationStatus.StatusCode.NotFound);
 
-            var deleteQuizAttempt = await _unitOfWork.QuizAttempt.GetAsync(
+            var attempt = await _unitOfWork.QuizAttempt.GetAsync(
                 qa => qa.QuizAttemptId == quizAttemptId &&
-                qa.Status != StaticOperationStatus.BaseEntity.Deleted);
+                      qa.Status != StaticOperationStatus.BaseEntity.Deleted);
 
-            if (deleteQuizAttempt is null)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.QuizAttempt.NotFound,
-                    statusCode: StaticOperationStatus.StatusCode.NotFound);
+            if (attempt == null)
+                return ErrorResponse.Build(StaticResponseMessage.QuizAttempt.NotFound,
+                    StaticOperationStatus.StatusCode.NotFound);
 
-            // Verify ownership or admin rights
             var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
-            var userRole = user.FindFirstValue(ClaimTypes.Role);
-            if (student != null && deleteQuizAttempt.StudentId != student.StudentId && userRole != StaticUserRoles.Admin)
-                return ErrorResponse.Build(
-                    message: StaticResponseMessage.User.UnAuthorized,
-                    statusCode: StaticOperationStatus.StatusCode.Forbidden);
+            var role = user.FindFirstValue(ClaimTypes.Role);
+            if (student != null && attempt.StudentId != student.StudentId && role != StaticUserRoles.Admin)
+                return ErrorResponse.Build(StaticResponseMessage.User.UnAuthorized,
+                    StaticOperationStatus.StatusCode.Forbidden);
 
-            deleteQuizAttempt.Status = StaticOperationStatus.BaseEntity.Deleted;
-            deleteQuizAttempt.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
-            deleteQuizAttempt.UpdatedBy = user.FindFirstValue("FullName");
+            attempt.Status = StaticOperationStatus.BaseEntity.Deleted;
+            attempt.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+            attempt.UpdatedBy = user.FindFirstValue("FullName");
 
             return (await SaveChangesAsync()) ?
                 SuccessResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.Deleted,
-                    statusCode: StaticOperationStatus.StatusCode.Ok)
+                    statusCode: StaticOperationStatus.StatusCode.Ok,
+                    result: _mapper.Map<QuizAttemptDto>(attempt))
                 :
                 ErrorResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.NotDeleted,

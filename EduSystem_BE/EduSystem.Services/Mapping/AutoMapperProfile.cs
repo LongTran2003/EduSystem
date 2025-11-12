@@ -9,6 +9,7 @@ using EduSystem.Models.DTOs.Answer;
 using EduSystem.Models.DTOs.LessonContent;
 using EduSystem.Models.DTOs.Matrix;
 using EduSystem.Models.DTOs.MatrixDetail;
+using EduSystem.Models.DTOs.QuizAttempt;
 using EduSystem.Models.DTOs.QuizQuestion;
 using EduSystem.Models.DTOs.StudentAnswers;
 using EduSystem.Models.DTOs.StudentProgresses;
@@ -454,6 +455,42 @@ namespace EduSystem.Services.Mapping
                 .ReverseMap();
 
             CreateMap<StudentProgress, UpdateProgressDto>();
+
+            // QuizAttempt mappings
+            CreateMap<QuizAttempt, QuizAttemptDto>()
+                .ForMember(dest => dest.QuizAttemptId, opt => opt.MapFrom(src => src.QuizAttemptId))
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.StudentId))
+                .ForMember(dest => dest.StudentName, opt => opt.MapFrom(src => src.Student.ApplicationUser.FullName))
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.QuizName, opt => opt.MapFrom(src => src.Quiz.QuizName))
+                .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
+                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
+                .ForMember(dest => dest.StudentAnswers, opt => opt.MapFrom(src => src.StudentAnswers))
+                .ForMember(dest => dest.Feedback, opt => opt.MapFrom(src => src.Feedback))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
+                .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom(src => src.CreatedTime))
+                .ForMember(dest => dest.UpdatedBy, opt => opt.MapFrom(src => src.UpdatedBy))
+                .ForMember(dest => dest.UpdatedTime, opt => opt.MapFrom(src => src.UpdatedTime))
+                .ReverseMap();
+
+            CreateMap<CreateQuizAttemptDto, QuizAttempt>()
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.StudentId))
+                .ForMember(dest => dest.QuizId, opt => opt.MapFrom(src => src.QuizId))
+                .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
+                .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
+                .ForMember(dest => dest.StudentAnswers, opt => opt.MapFrom(src => src.StudentAnswers))
+                .ReverseMap();
+
+
+            CreateMap<UpdateQuizAttemptDto, QuizAttempt>()
+                .ForMember(dest => dest.QuizAttemptId, opt => opt.MapFrom(src => src.QuizAttemptId))
+                .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
+                .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
+                .ForMember(dest => dest.StudentAnswers, opt => opt.MapFrom(src => src.StudentAnswers))
+                .ReverseMap();
 
         }
     }
