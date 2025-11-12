@@ -129,20 +129,24 @@ namespace EduSystem.DataAccess.DBContext
                 .HasForeignKey(s => s.UserId);
 
             // StudentAnswer configuration (Composite Key)
-            modelBuilder.Entity<StudentAnswer>()
-                .HasKey(sa => new { sa.AttemptId, sa.QuestionId });
-            modelBuilder.Entity<StudentAnswer>()
-                .HasOne(sa => sa.QuizAttempt)
-                .WithMany(qa => qa.StudentAnswers)
-                .HasForeignKey(sa => sa.AttemptId);
-            modelBuilder.Entity<StudentAnswer>()
-                .HasOne(sa => sa.Question)
-                .WithMany(q => q.StudentAnswers)
-                .HasForeignKey(sa => sa.QuestionId);
-            modelBuilder.Entity<StudentAnswer>()
-                .HasOne(sa => sa.Answer)
-                .WithMany(a => a.StudentAnswers)
-                .HasForeignKey(sa => sa.AnswerId);
+            modelBuilder.Entity<StudentAnswer>(entity =>
+            {
+                entity.HasKey(sa => sa.StudentAnswerId);
+                entity.HasIndex(sa => new { sa.AttemptId, sa.QuestionId }).IsUnique();
+
+                entity.HasOne(sa => sa.QuizAttempt)
+                      .WithMany(qa => qa.StudentAnswers)
+                      .HasForeignKey(sa => sa.AttemptId);
+
+                entity.HasOne(sa => sa.Question)
+                      .WithMany()
+                      .HasForeignKey(sa => sa.QuestionId);
+
+                entity.HasOne(sa => sa.Answer)
+                      .WithMany()
+                      .HasForeignKey(sa => sa.AnswerId)
+                      .OnDelete(DeleteBehavior.NoAction);
+            });
 
             // StudentProgress configuration (Composite Key)
             modelBuilder.Entity<StudentProgress>(entity =>

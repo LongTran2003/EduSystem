@@ -466,7 +466,6 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime))
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
-                .ForMember(dest => dest.StudentAnswers, opt => opt.MapFrom(src => src.StudentAnswers))
                 .ForMember(dest => dest.Feedback, opt => opt.MapFrom(src => src.Feedback))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
@@ -481,7 +480,6 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.StartTime, opt => opt.MapFrom(src => src.StartTime))
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
-                .ForMember(dest => dest.StudentAnswers, opt => opt.MapFrom(src => src.StudentAnswers))
                 .ReverseMap();
 
 
@@ -489,7 +487,7 @@ namespace EduSystem.Services.Mapping
                 .ForMember(dest => dest.QuizAttemptId, opt => opt.MapFrom(src => src.QuizAttemptId))
                 .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Score))
                 .ForMember(dest => dest.EndTime, opt => opt.MapFrom(src => src.EndTime))
-                .ForMember(dest => dest.StudentAnswers, opt => opt.MapFrom(src => src.StudentAnswers))
+                .ForMember(dest => dest.Feedback, opt => opt.MapFrom(src => src.Feedback))
                 .ReverseMap();
 
         }

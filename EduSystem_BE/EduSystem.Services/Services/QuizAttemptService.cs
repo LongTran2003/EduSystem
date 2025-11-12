@@ -44,25 +44,11 @@ namespace EduSystem.Services.Services
 
             var attempt = _mapper.Map<QuizAttempt>(createQuizAttemptDto);
             attempt.QuizAttemptId = Guid.NewGuid();
-            attempt.Score = (decimal?)createQuizAttemptDto.Score;
             attempt.Status = StaticOperationStatus.BaseEntity.Active;
             attempt.CreatedBy = user.FindFirstValue("FullName");
             attempt.CreatedTime = StaticOperationStatus.Timezone.Vietnam;
 
             await _unitOfWork.QuizAttempt.AddAsync(attempt);
-
-            if (createQuizAttemptDto.StudentAnswers != null && createQuizAttemptDto.StudentAnswers.Any())
-            {
-                foreach (var a in createQuizAttemptDto.StudentAnswers)
-                {
-                    var sa = _mapper.Map<StudentAnswer>(a);
-                    sa.AttemptId = attempt.QuizAttemptId;
-                    sa.Status = StaticOperationStatus.BaseEntity.Active;
-                    sa.CreatedBy = attempt.CreatedBy;
-                    sa.CreatedTime = attempt.CreatedTime;
-                    await _unitOfWork.StudentAnswer.AddAsync(sa);
-                }
-            }
 
             return (await SaveChangesAsync())
                 ? SuccessResponse.Build(
@@ -71,7 +57,7 @@ namespace EduSystem.Services.Services
                     result: _mapper.Map<QuizAttemptDto>(
                         await _unitOfWork.QuizAttempt.GetAsync(
                             qa => qa.QuizAttemptId == attempt.QuizAttemptId,
-                            includeProperties: "Student,Student.ApplicationUser,Quiz,StudentAnswers")))
+                            includeProperties: "Student,Student.ApplicationUser,Quiz")))
                 : ErrorResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.NotCreated,
                     statusCode: StaticOperationStatus.StatusCode.InternalServerError);
@@ -88,53 +74,28 @@ namespace EduSystem.Services.Services
             var attempt = await _unitOfWork.QuizAttempt.GetAsync(
                 qa => qa.QuizAttemptId == updateQuizAttemptDto.QuizAttemptId &&
                       qa.Status != StaticOperationStatus.BaseEntity.Deleted,
-                includeProperties: "Student,Student.ApplicationUser,Quiz,StudentAnswers");
+                includeProperties: "Student,Student.ApplicationUser,Quiz");
 
             if (attempt == null)
                 return ErrorResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.NotFound,
                     statusCode: StaticOperationStatus.StatusCode.NotFound);
 
-            var userRole = user.FindFirstValue(ClaimTypes.Role);
-            var student = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
-            if (student != null && attempt.StudentId != student.StudentId &&
-                userRole != StaticUserRoles.Admin && userRole != StaticUserRoles.Teacher)
+            var role = user.FindFirstValue(ClaimTypes.Role);
+            var stu = await _unitOfWork.Student.GetAsync(s => s.UserId == userId);
+            if (stu != null && attempt.StudentId != stu.StudentId &&
+                role != StaticUserRoles.Admin && role != StaticUserRoles.Teacher)
                 return ErrorResponse.Build(
                     message: StaticResponseMessage.User.UnAuthorized,
                     statusCode: StaticOperationStatus.StatusCode.Forbidden);
 
-            // Update fields
             if (updateQuizAttemptDto.EndTime.HasValue) attempt.EndTime = updateQuizAttemptDto.EndTime.Value;
             if (updateQuizAttemptDto.Score.HasValue) attempt.Score = updateQuizAttemptDto.Score.Value;
+            if (updateQuizAttemptDto.Feedback != null) attempt.Feedback = updateQuizAttemptDto.Feedback;
 
             attempt.UpdatedBy = user.FindFirstValue("FullName");
             attempt.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
 
-            // Replace student answers if provided
-            if (updateQuizAttemptDto.StudentAnswers != null && updateQuizAttemptDto.StudentAnswers.Any())
-            {
-                var existingAnswers = await _unitOfWork.StudentAnswer.GetAllAsync(sa => sa.AttemptId == attempt.QuizAttemptId);
-                foreach (var old in existingAnswers)
-                {
-                    old.Status = StaticOperationStatus.BaseEntity.Deleted;
-                    old.UpdatedBy = attempt.UpdatedBy;
-                    old.UpdatedTime = attempt.UpdatedTime;
-                }
-
-                foreach (var upd in updateQuizAttemptDto.StudentAnswers)
-                {
-                    var sa = _mapper.Map<StudentAnswer>(upd);
-                    sa.AttemptId = attempt.QuizAttemptId;
-                    sa.Status = StaticOperationStatus.BaseEntity.Active;
-                    sa.CreatedBy = attempt.CreatedBy;
-                    sa.CreatedTime = attempt.CreatedTime;
-                    sa.UpdatedBy = attempt.UpdatedBy;
-                    sa.UpdatedTime = attempt.UpdatedTime;
-                    await _unitOfWork.StudentAnswer.AddAsync(sa);
-                }
-            }
-
-            // Return theo mẫu bạn đưa
             return (await SaveChangesAsync())
                 ? SuccessResponse.Build(
                     message: StaticResponseMessage.QuizAttempt.Updated,

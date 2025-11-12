@@ -11,6 +11,5 @@ namespace EduSystem.Models.DTOs.QuizAttempt
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public double Score { get; set; }
-        public List<CreateStudentAnswerDto>? StudentAnswers { get; set; } = new List<CreateStudentAnswerDto>();
     }
 }

@@ -12,9 +12,8 @@ namespace EduSystem.Models.DTOs.QuizAttempt
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public decimal? Score { get; set; }
-        public string Status { get; set; } = string.Empty;
         public string? Feedback { get; set; }
-        public List<StudentAnswerDto>? StudentAnswers { get; set; } = new List<StudentAnswerDto>();
+        public string? Status { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedTime { get; set; }
         public string? UpdatedBy { get; set; }

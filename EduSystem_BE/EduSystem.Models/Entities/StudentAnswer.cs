@@ -6,6 +6,8 @@ namespace EduSystem.Models.Entities
     public class StudentAnswer : BaseEntity<string, string, string>
     {
         [Key]
+        public Guid StudentAnswerId { get; set; }
+
         public Guid AttemptId { get; set; }
         [ForeignKey("AttemptId")]
         public virtual QuizAttempt QuizAttempt { get; set; } = null!;
