@@ -7,6 +7,8 @@ namespace EduSystem.Models.DTOs.Answer
         [Required]
         public Guid AnswerId { get; set; }
 
+        public Guid? QuestionId { get; set; }
+
         [Required]
         public string Content { get; set; } = null!;
 

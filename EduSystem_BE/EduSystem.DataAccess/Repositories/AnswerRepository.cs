@@ -84,6 +84,12 @@ namespace EduSystem.DataAccess.Repositories
             _context.Entry(target).CurrentValues.SetValues(source);
         }
 
+        public void Update(Answer answer)
+        {
+            _context.Set<Answer>().Attach(answer);
+            _context.Entry(answer).State = EntityState.Modified;
+        }
+
         public async Task<IEnumerable<Answer>> GetAnswersByQuestionId(Guid questionId)
         {
             return await _context.Answers

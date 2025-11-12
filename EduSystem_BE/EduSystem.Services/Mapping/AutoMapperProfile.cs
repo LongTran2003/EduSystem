@@ -276,6 +276,7 @@ namespace EduSystem.Services.Mapping
 
             CreateMap<Answer, UpdateAnswerDto>()
                 .ForMember(dest => dest.AnswerId, opt => opt.MapFrom(src => src.AnswerId))
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
                 .ForMember(dest => dest.IsCorrect, opt => opt.MapFrom(src => src.IsCorrect))
                 .ForMember(dest => dest.Explanation, opt => opt.MapFrom(src => src.Explanation))

@@ -14,6 +14,7 @@ namespace EduSystem.DataAccess.IRepositories
             string? includeProperties = null);
 
         void Update(Answer target, Answer source);
+        void Update(Answer answer);
 
         Task<IEnumerable<Answer>> GetAnswersByQuestionId(Guid questionId);
     }

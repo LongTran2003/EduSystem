@@ -71,14 +71,31 @@ namespace EduSystem.Services.Services
                         message: StaticResponseMessage.Answer.NotFound,
                         statusCode: StaticOperationStatus.StatusCode.NotFound);
 
-                var updateAnswer = _mapper.Map<Models.Entities.Answer>(updateDto);
-                updateAnswer.Status = answer.Status;
-                updateAnswer.CreatedBy = answer.CreatedBy;
-                updateAnswer.CreatedTime = answer.CreatedTime;
-                updateAnswer.UpdatedBy = user.FindFirstValue("Fullname");
-                updateAnswer.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+                // Lấy QuestionId mục tiêu: nếu không gửi hoặc Guid.Empty => giữ nguyên
+                var targetQuestionId = (updateDto.QuestionId.HasValue && updateDto.QuestionId.Value != Guid.Empty)
+                    ? updateDto.QuestionId.Value
+                    : answer.QuestionId;
 
-                _unitOfWork.Answer.Update(answer, updateAnswer);
+                // Nếu có thay đổi QuestionId thì kiểm tra tồn tại
+                if (targetQuestionId != answer.QuestionId)
+                {
+                    var question = await _unitOfWork.Question.GetAsync(q => q.QuestionId == targetQuestionId);
+                    if (question == null)
+                        return ErrorResponse.Build(
+                            message: StaticResponseMessage.Question.NotFound,
+                            statusCode: StaticOperationStatus.StatusCode.BadRequest);
+                }
+
+                // Cập nhật trực tiếp để tránh reset FK
+                answer.Content = updateDto.Content;
+                answer.IsCorrect = updateDto.IsCorrect;
+                answer.Explanation = updateDto.Explanation;
+                answer.QuestionId = targetQuestionId;
+
+                answer.UpdatedBy = user.FindFirstValue("Fullname");
+                answer.UpdatedTime = StaticOperationStatus.Timezone.Vietnam;
+
+                _unitOfWork.Answer.Update(answer);
 
                 if (!await SaveChangesAsync())
                     return ErrorResponse.Build(
@@ -88,7 +105,7 @@ namespace EduSystem.Services.Services
                 return SuccessResponse.Build(
                     message: StaticResponseMessage.Answer.Updated,
                     statusCode: StaticOperationStatus.StatusCode.Ok,
-                    result: _mapper.Map<AnswerDto>(updateAnswer));
+                    result: _mapper.Map<AnswerDto>(answer));
             }
             catch (Exception ex)
             {
