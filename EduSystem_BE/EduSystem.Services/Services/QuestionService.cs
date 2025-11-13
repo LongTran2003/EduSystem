@@ -1,5 +1,5 @@
 using AutoMapper;
-using EduSystem.DataAccess.IRepositories;
+using EduSystem.Repository.IRepositories;
 using EduSystem.Models.DTO;
 using EduSystem.Models.DTO.Question;
 using EduSystem.Models.Entities;

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduSystem.API", "EduSystem.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduSystem.Models", "..\EduSystem.Models\EduSystem.Models.csproj", "{6BD4B157-C1F8-4943-B893-C5399F138AB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduSystem.DataAccess", "..\EduSystem.DataAccess\EduSystem.DataAccess.csproj", "{00E4FFD2-D002-4A51-A6FA-737241B7BB38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduSystem.Repository", "..\EduSystem.Repository\EduSystem.Repository.csproj", "{00E4FFD2-D002-4A51-A6FA-737241B7BB38}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduSystem.Services", "..\EduSystem.Services\EduSystem.Services.csproj", "{381D679A-68F9-4847-92B8-E196D6AA87EA}"
 EndProject

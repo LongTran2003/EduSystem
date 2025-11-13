@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EduSystem.DataAccess\EduSystem.DataAccess.csproj" />
+    <ProjectReference Include="..\EduSystem.Repository\EduSystem.Repository.csproj" />
     <ProjectReference Include="..\EduSystem.Services\EduSystem.Services.csproj" />
   </ItemGroup>
 

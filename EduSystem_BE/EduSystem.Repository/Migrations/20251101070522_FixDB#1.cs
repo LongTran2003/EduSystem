@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EduSystem.DataAccess.Migrations
+namespace EduSystem.Repository.Migrations
 {
     /// <inheritdoc />
     public partial class FixDB1 : Migration

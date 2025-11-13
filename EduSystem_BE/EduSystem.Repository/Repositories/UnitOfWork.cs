@@ -1,10 +1,10 @@
-﻿using EduSystem.DataAccess.DBContext;
-using EduSystem.DataAccess.IRepositories;
-using EduSystem.Models.Entities;
+﻿using EduSystem.Models.Entities;
+using EduSystem.Repository.DBContext;
+using EduSystem.Repository.IRepositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace EduSystem.DataAccess.Repositories
+namespace EduSystem.Repository.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {

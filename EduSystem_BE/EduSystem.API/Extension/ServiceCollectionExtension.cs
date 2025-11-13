@@ -1,5 +1,5 @@
-﻿using EduSystem.DataAccess.IRepositories;
-using EduSystem.DataAccess.Repositories;
+﻿using EduSystem.Repository.IRepositories;
+using EduSystem.Repository.Repositories;
 using EduSystem.Services.IServices;
 using EduSystem.Services.Mapping;
 using EduSystem.Services.Services;

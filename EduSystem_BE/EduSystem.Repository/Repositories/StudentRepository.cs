@@ -1,11 +1,11 @@
-﻿using EduSystem.DataAccess.DBContext;
-using EduSystem.DataAccess.IRepositories;
-using EduSystem.Models.Entities;
+﻿using EduSystem.Models.Entities;
 using EduSystem.Models.Enums;
+using EduSystem.Repository.DBContext;
+using EduSystem.Repository.IRepositories;
 using EduSystem.Utilities.Contants;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSystem.DataAccess.Repositories
+namespace EduSystem.Repository.Repositories
 {
     public class StudentRepository : Repository<Student>, IStudentRepository
     {

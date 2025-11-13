@@ -1,6 +1,6 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using EduSystem.DataAccess.DBContext;
+using EduSystem.Repository.DBContext;
 using EduSystem.Models.DTO.Cloudinary;
 using EduSystem.Services.IServices;
 using EduSystem.Utilities.Contants;

@@ -2,7 +2,7 @@
 
 using System.Linq.Expressions;
 
-namespace EduSystem.DataAccess.IRepositories
+namespace EduSystem.Repository.IRepositories
 {
     public interface IRepository<T> where T : class
     {

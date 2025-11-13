@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EduSystem.DataAccess.Migrations
+namespace EduSystem.Repository.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateToAiven1 : Migration

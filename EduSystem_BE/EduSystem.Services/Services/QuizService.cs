@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using AutoMapper;
-using EduSystem.DataAccess.IRepositories;
+using EduSystem.Repository.IRepositories;
 using EduSystem.Models.DTO;
 using EduSystem.Models.DTO.Quiz;
 using EduSystem.Models.Entities;

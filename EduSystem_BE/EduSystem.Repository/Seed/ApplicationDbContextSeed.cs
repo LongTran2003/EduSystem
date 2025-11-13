@@ -3,7 +3,7 @@ using EduSystem.Utilities.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSystem.DataAccess.Seed
+namespace EduSystem.Repository.Seed
 {
     public class ApplicationDbContextSeed
     {

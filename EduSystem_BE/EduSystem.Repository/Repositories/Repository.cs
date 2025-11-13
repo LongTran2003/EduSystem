@@ -1,10 +1,10 @@
-﻿using EduSystem.DataAccess.DBContext;
-using EduSystem.DataAccess.IRepositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
+using EduSystem.Repository.DBContext;
+using EduSystem.Repository.IRepositories;
 
-namespace EduSystem.DataAccess.Repositories
+namespace EduSystem.Repository.Repositories
 {
     public class Repository<T> : IRepository<T> where T : class
     {

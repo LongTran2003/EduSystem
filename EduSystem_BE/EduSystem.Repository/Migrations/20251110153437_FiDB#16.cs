@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EduSystem.DataAccess.Migrations
+namespace EduSystem.Repository.Migrations
 {
     /// <inheritdoc />
     public partial class FiDB16 : Migration

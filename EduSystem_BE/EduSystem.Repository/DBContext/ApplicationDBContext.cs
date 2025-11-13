@@ -1,9 +1,9 @@
-﻿using EduSystem.DataAccess.Seed;
-using EduSystem.Models.Entities;
+﻿using EduSystem.Models.Entities;
+using EduSystem.Repository.Seed;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace EduSystem.DataAccess.DBContext
+namespace EduSystem.Repository.DBContext
 {
     public class ApplicationDBContext : IdentityDbContext<ApplicationUser>
     {

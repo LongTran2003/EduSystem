@@ -1,6 +1,6 @@
 ﻿using EduSystem.API.Extension;
 using EduSystem.API.MiddleWare;
-using EduSystem.DataAccess.DBContext;
+using EduSystem.Repository.DBContext;
 using EduSystem.Models.Entities;
 using EduSystem.Utilities.Contants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -1,6 +1,6 @@
 ﻿using EduSystem.Models.Entities;
 
-namespace EduSystem.DataAccess.IRepositories
+namespace EduSystem.Repository.IRepositories
 {
     public interface IQuizRepository : IRepository<Quiz>
     {

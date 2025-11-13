@@ -1,4 +1,4 @@
-﻿using EduSystem.DataAccess.IRepositories;
+﻿using EduSystem.Repository.IRepositories;
 using EduSystem.Models.DTO;
 using EduSystem.Models.DTO.ManageUser;
 using EduSystem.Models.Entities;

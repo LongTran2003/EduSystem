@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 
-namespace EduSystem.DataAccess.IRepositories
+namespace EduSystem.Repository.IRepositories
 {
     public interface IUnitOfWork
     {
