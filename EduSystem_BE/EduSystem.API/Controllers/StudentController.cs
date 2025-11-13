@@ -20,8 +20,7 @@ namespace EduSystem.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "ADMIN")]
-        [SwaggerOperation(Summary = "Get all students", Description = "Requires Admin role; supports pagination, filtering, sorting")]
+        [SwaggerOperation(Summary = "Get all students", Description = "Supports pagination, filtering, sorting")]
         public async Task<IActionResult> GetAllStudent(
             [FromQuery] int pageNumber = 1,
             int pageSize = 10,

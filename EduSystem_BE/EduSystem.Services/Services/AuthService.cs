@@ -347,7 +347,7 @@ namespace EduSystem.Services.Services
                 // Xây dựng liên kết xác thực.
                 // Lưu ý: thay đổi URL cho phù hợp với môi trường (local hay production)
                 var verificationLink =
-                    $"https://edusystem-fe.vercel.app/email-verified?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+                    $"http://localhost:3000/email-verified?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
                 // Gọi EmailService để gửi email xác thực sử dụng template VerificationEmailTemplate
                 var emailSent = await _emailService.SendVerificationEmailAsync(user.Email!, verificationLink, user.FullName);
